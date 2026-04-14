@@ -1,0 +1,1054 @@
+{
+  "info": {
+    "name": "Femm Pilates API",
+    "description": "Sistem Informasi Layanan Femm Pilates — Laravel 13 + Midtrans Snap",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\",\n  \"no_hp\": \"08123456789\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('token', json.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhook",
+      "item": [
+        {
+          "name": "Midtrans Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"PIL-1-ABCDEF\",\n  \"transaction_status\": \"settlement\",\n  \"fraud_status\": \"accept\",\n  \"payment_type\": \"bank_transfer\",\n  \"gross_amount\": \"100000.00\",\n  \"status_code\": \"200\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/webhook/midtrans",
+              "host": ["{{base_url}}"],
+              "path": ["webhook", "midtrans"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Packages (Public)",
+      "item": [
+        {
+          "name": "List Packages",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/packages",
+              "host": ["{{base_url}}"],
+              "path": ["packages"]
+            }
+          }
+        },
+        {
+          "name": "Show Package",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/packages/1",
+              "host": ["{{base_url}}"],
+              "path": ["packages", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Packages",
+          "item": [
+            {
+              "name": "List Packages",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/packages", "host": ["{{base_url}}"], "path": ["admin", "packages"] }
+              }
+            },
+            {
+              "name": "Create Package",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_package\": \"Paket Bronze\",\n  \"jumlah_kredit\": 5,\n  \"harga\": 150000,\n  \"masa_berlaku\": 30,\n  \"status_package\": \"active\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/packages", "host": ["{{base_url}}"], "path": ["admin", "packages"] }
+              }
+            },
+            {
+              "name": "Show Package",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/packages/1", "host": ["{{base_url}}"], "path": ["admin", "packages", "1"] }
+              }
+            },
+            {
+              "name": "Update Package",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_package\": \"Paket Bronze Updated\",\n  \"harga\": 175000\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/packages/1", "host": ["{{base_url}}"], "path": ["admin", "packages", "1"] }
+              }
+            },
+            {
+              "name": "Delete Package",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/packages/1", "host": ["{{base_url}}"], "path": ["admin", "packages", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Kelas",
+          "item": [
+            {
+              "name": "List Kelas",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/kelas", "host": ["{{base_url}}"], "path": ["admin", "kelas"] }
+              }
+            },
+            {
+              "name": "Create Kelas",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_kelas\": \"Reformer Pilates\",\n  \"deskripsi\": \"Kelas reformer untuk pemula\",\n  \"kapasitas\": 10\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/kelas", "host": ["{{base_url}}"], "path": ["admin", "kelas"] }
+              }
+            },
+            {
+              "name": "Show Kelas",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/kelas/1", "host": ["{{base_url}}"], "path": ["admin", "kelas", "1"] }
+              }
+            },
+            {
+              "name": "Update Kelas",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_kelas\": \"Mat Pilates\",\n  \"kapasitas\": 15\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/kelas/1", "host": ["{{base_url}}"], "path": ["admin", "kelas", "1"] }
+              }
+            },
+            {
+              "name": "Delete Kelas",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/kelas/1", "host": ["{{base_url}}"], "path": ["admin", "kelas", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Instruktur",
+          "item": [
+            {
+              "name": "List Instruktur",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/instruktur", "host": ["{{base_url}}"], "path": ["admin", "instruktur"] }
+              }
+            },
+            {
+              "name": "Create Instruktur",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id_user\": 1,\n  \"spesialisasi\": \"Reformer\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/instruktur", "host": ["{{base_url}}"], "path": ["admin", "instruktur"] }
+              }
+            },
+            {
+              "name": "Show Instruktur",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/instruktur/1", "host": ["{{base_url}}"], "path": ["admin", "instruktur", "1"] }
+              }
+            },
+            {
+              "name": "Update Instruktur",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"spesialisasi\": \"Mat & Reformer\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/instruktur/1", "host": ["{{base_url}}"], "path": ["admin", "instruktur", "1"] }
+              }
+            },
+            {
+              "name": "Delete Instruktur",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/instruktur/1", "host": ["{{base_url}}"], "path": ["admin", "instruktur", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pelanggan",
+          "item": [
+            {
+              "name": "List Pelanggan",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/pelanggan", "host": ["{{base_url}}"], "path": ["admin", "pelanggan"] }
+              }
+            },
+            {
+              "name": "Show Pelanggan",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/pelanggan/1", "host": ["{{base_url}}"], "path": ["admin", "pelanggan", "1"] }
+              }
+            },
+            {
+              "name": "Update Pelanggan",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"tanggal_daftar\": \"2026-01-01\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/pelanggan/1", "host": ["{{base_url}}"], "path": ["admin", "pelanggan", "1"] }
+              }
+            },
+            {
+              "name": "Delete Pelanggan",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/pelanggan/1", "host": ["{{base_url}}"], "path": ["admin", "pelanggan", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Promo",
+          "item": [
+            {
+              "name": "List Promo",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/promo", "host": ["{{base_url}}"], "path": ["admin", "promo"] }
+              }
+            },
+            {
+              "name": "Create Promo",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"kode_promo\": \"FEMM2026\",\n  \"nama_promo\": \"Promo Awal Tahun\",\n  \"persenan_diskon\": 15.00,\n  \"tanggal_mulai\": \"2026-01-01 00:00:00\",\n  \"tanggal_selesai\": \"2026-06-30 23:59:59\",\n  \"status_promo\": \"active\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/promo", "host": ["{{base_url}}"], "path": ["admin", "promo"] }
+              }
+            },
+            {
+              "name": "Show Promo",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/promo/1", "host": ["{{base_url}}"], "path": ["admin", "promo", "1"] }
+              }
+            },
+            {
+              "name": "Update Promo",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"persenan_diskon\": 20.00,\n  \"status_promo\": \"inactive\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/promo/1", "host": ["{{base_url}}"], "path": ["admin", "promo", "1"] }
+              }
+            },
+            {
+              "name": "Delete Promo",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/promo/1", "host": ["{{base_url}}"], "path": ["admin", "promo", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Jadwal Kelas",
+          "item": [
+            {
+              "name": "List Jadwal Kelas",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/jadwal-kelas", "host": ["{{base_url}}"], "path": ["admin", "jadwal-kelas"] }
+              }
+            },
+            {
+              "name": "Create Jadwal Kelas",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id_kelas\": 1,\n  \"id_instruktur\": 1,\n  \"tanggal_kelas\": \"2026-04-15\",\n  \"jam_mulai\": \"2026-04-15 09:00:00\",\n  \"jam_selesai\": \"2026-04-15 10:00:00\",\n  \"kuota_maksimal\": 10\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/jadwal-kelas", "host": ["{{base_url}}"], "path": ["admin", "jadwal-kelas"] }
+              }
+            },
+            {
+              "name": "Show Jadwal Kelas",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/jadwal-kelas/1", "host": ["{{base_url}}"], "path": ["admin", "jadwal-kelas", "1"] }
+              }
+            },
+            {
+              "name": "Update Jadwal Kelas",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"kuota_maksimal\": 15,\n  \"jam_mulai\": \"2026-04-15 10:00:00\",\n  \"jam_selesai\": \"2026-04-15 11:00:00\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/jadwal-kelas/1", "host": ["{{base_url}}"], "path": ["admin", "jadwal-kelas", "1"] }
+              }
+            },
+            {
+              "name": "Delete Jadwal Kelas",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/jadwal-kelas/1", "host": ["{{base_url}}"], "path": ["admin", "jadwal-kelas", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Artikel",
+          "item": [
+            {
+              "name": "List Artikel",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/artikel", "host": ["{{base_url}}"], "path": ["admin", "artikel"] }
+              }
+            },
+            {
+              "name": "Create Artikel",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"judul_artikel\": \"Manfaat Pilates untuk Kesehatan\",\n  \"konten_artikel\": \"Pilates adalah metode latihan fisik yang...\",\n  \"gambar_artikel\": null,\n  \"tanggal_publish\": \"2026-04-10 08:00:00\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/artikel", "host": ["{{base_url}}"], "path": ["admin", "artikel"] }
+              }
+            },
+            {
+              "name": "Show Artikel",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/artikel/1", "host": ["{{base_url}}"], "path": ["admin", "artikel", "1"] }
+              }
+            },
+            {
+              "name": "Update Artikel",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"judul_artikel\": \"Manfaat Pilates - Updated\",\n  \"konten_artikel\": \"Updated content...\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/artikel/1", "host": ["{{base_url}}"], "path": ["admin", "artikel", "1"] }
+              }
+            },
+            {
+              "name": "Delete Artikel",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/artikel/1", "host": ["{{base_url}}"], "path": ["admin", "artikel", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Roles",
+          "item": [
+            {
+              "name": "List Roles",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/roles", "host": ["{{base_url}}"], "path": ["admin", "roles"] }
+              }
+            },
+            {
+              "name": "Create Role",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_role\": \"manager\",\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/roles", "host": ["{{base_url}}"], "path": ["admin", "roles"] }
+              }
+            },
+            {
+              "name": "Show Role",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/roles/1", "host": ["{{base_url}}"], "path": ["admin", "roles", "1"] }
+              }
+            },
+            {
+              "name": "Update Role",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_role\": \"super_admin\",\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/roles/1", "host": ["{{base_url}}"], "path": ["admin", "roles", "1"] }
+              }
+            },
+            {
+              "name": "Delete Role",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/roles/1", "host": ["{{base_url}}"], "path": ["admin", "roles", "1"] }
+              }
+            },
+            {
+              "name": "Sync Permissions",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"permission_ids\": [1, 2, 3]\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/roles/1/permissions", "host": ["{{base_url}}"], "path": ["admin", "roles", "1", "permissions"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Permissions",
+          "item": [
+            {
+              "name": "List Permissions",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/permissions", "host": ["{{base_url}}"], "path": ["admin", "permissions"] }
+              }
+            },
+            {
+              "name": "Create Permission",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_permission\": \"manage_packages\",\n  \"deskripsi\": \"Dapat mengelola data package\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/permissions", "host": ["{{base_url}}"], "path": ["admin", "permissions"] }
+              }
+            },
+            {
+              "name": "Show Permission",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/permissions/1", "host": ["{{base_url}}"], "path": ["admin", "permissions", "1"] }
+              }
+            },
+            {
+              "name": "Update Permission",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama_permission\": \"manage_all_packages\",\n  \"deskripsi\": \"Updated description\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/permissions/1", "host": ["{{base_url}}"], "path": ["admin", "permissions", "1"] }
+              }
+            },
+            {
+              "name": "Delete Permission",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/permissions/1", "host": ["{{base_url}}"], "path": ["admin", "permissions", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Users",
+          "item": [
+            {
+              "name": "List Users",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/users", "host": ["{{base_url}}"], "path": ["admin", "users"] }
+              }
+            },
+            {
+              "name": "Show User",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/users/1", "host": ["{{base_url}}"], "path": ["admin", "users", "1"] }
+              }
+            },
+            {
+              "name": "Update User",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nama\": \"Updated Name\",\n  \"no_hp\": \"08111222333\",\n  \"status\": \"active\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/users/1", "host": ["{{base_url}}"], "path": ["admin", "users", "1"] }
+              }
+            },
+            {
+              "name": "Deactivate User",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/users/1/deactivate", "host": ["{{base_url}}"], "path": ["admin", "users", "1", "deactivate"] }
+              }
+            },
+            {
+              "name": "Sync Roles",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"role_ids\": [1, 2]\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/users/1/roles", "host": ["{{base_url}}"], "path": ["admin", "users", "1", "roles"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Transaksi",
+          "item": [
+            {
+              "name": "List Transaksi",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/transaksi", "host": ["{{base_url}}"], "path": ["admin", "transaksi"] }
+              }
+            },
+            {
+              "name": "Show Transaksi",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/transaksi/1", "host": ["{{base_url}}"], "path": ["admin", "transaksi", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pembelian Package",
+          "item": [
+            {
+              "name": "List Pembelian Package",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/pembelian-package", "host": ["{{base_url}}"], "path": ["admin", "pembelian-package"] }
+              }
+            },
+            {
+              "name": "Show Pembelian Package",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/pembelian-package/1", "host": ["{{base_url}}"], "path": ["admin", "pembelian-package", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bookings",
+          "item": [
+            {
+              "name": "List Bookings",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/bookings", "host": ["{{base_url}}"], "path": ["admin", "bookings"] }
+              }
+            },
+            {
+              "name": "Show Booking",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/bookings/1", "host": ["{{base_url}}"], "path": ["admin", "bookings", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Absensi",
+          "item": [
+            {
+              "name": "List Absensi by Jadwal",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/absensi/jadwal/1", "host": ["{{base_url}}"], "path": ["admin", "absensi", "jadwal", "1"] }
+              }
+            },
+            {
+              "name": "Mark Attendance",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id_booking\": 1,\n  \"status_kehadiran\": \"hadir\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/admin/absensi", "host": ["{{base_url}}"], "path": ["admin", "absensi"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Activity Logs",
+          "item": [
+            {
+              "name": "List Activity Logs",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/activity-logs", "host": ["{{base_url}}"], "path": ["admin", "activity-logs"] }
+              }
+            },
+            {
+              "name": "Activity Logs by User",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/admin/activity-logs/user/1", "host": ["{{base_url}}"], "path": ["admin", "activity-logs", "user", "1"] }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Instruktur",
+      "item": [
+        {
+          "name": "Jadwal",
+          "item": [
+            {
+              "name": "List Jadwal Saya",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/instruktur/jadwal", "host": ["{{base_url}}"], "path": ["instruktur", "jadwal"] }
+              }
+            },
+            {
+              "name": "Show Jadwal Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/instruktur/jadwal/1", "host": ["{{base_url}}"], "path": ["instruktur", "jadwal", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Absensi",
+          "item": [
+            {
+              "name": "List Absensi by Jadwal",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/instruktur/absensi/jadwal/1", "host": ["{{base_url}}"], "path": ["instruktur", "absensi", "jadwal", "1"] }
+              }
+            },
+            {
+              "name": "Mark Attendance",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id_booking\": 1,\n  \"status_kehadiran\": \"hadir\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/instruktur/absensi", "host": ["{{base_url}}"], "path": ["instruktur", "absensi"] }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pelanggan",
+      "item": [
+        {
+          "name": "Jadwal Kelas",
+          "item": [
+            {
+              "name": "List Jadwal Kelas",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/jadwal-kelas", "host": ["{{base_url}}"], "path": ["pelanggan", "jadwal-kelas"] }
+              }
+            },
+            {
+              "name": "Show Jadwal Kelas",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/jadwal-kelas/1", "host": ["{{base_url}}"], "path": ["pelanggan", "jadwal-kelas", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Artikel",
+          "item": [
+            {
+              "name": "List Artikel",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/artikel", "host": ["{{base_url}}"], "path": ["pelanggan", "artikel"] }
+              }
+            },
+            {
+              "name": "Show Artikel",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/artikel/1", "host": ["{{base_url}}"], "path": ["pelanggan", "artikel", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bookings",
+          "item": [
+            {
+              "name": "List My Bookings",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/bookings", "host": ["{{base_url}}"], "path": ["pelanggan", "bookings"] }
+              }
+            },
+            {
+              "name": "Show Booking",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/bookings/1", "host": ["{{base_url}}"], "path": ["pelanggan", "bookings", "1"] }
+              }
+            },
+            {
+              "name": "Create Booking",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id_pelanggan\": 1,\n  \"id_jadwal_kelas\": 1,\n  \"id_pembelian_package\": 1\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/pelanggan/bookings", "host": ["{{base_url}}"], "path": ["pelanggan", "bookings"] }
+              }
+            },
+            {
+              "name": "Cancel Booking",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/bookings/1/cancel", "host": ["{{base_url}}"], "path": ["pelanggan", "bookings", "1", "cancel"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pembelian Package",
+          "item": [
+            {
+              "name": "List My Pembelian",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/pembelian", "host": ["{{base_url}}"], "path": ["pelanggan", "pembelian"] }
+              }
+            },
+            {
+              "name": "Show Pembelian",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/pembelian/1", "host": ["{{base_url}}"], "path": ["pelanggan", "pembelian", "1"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Transaksi",
+          "item": [
+            {
+              "name": "List My Transaksi",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/transaksi", "host": ["{{base_url}}"], "path": ["pelanggan", "transaksi"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Kredit",
+          "item": [
+            {
+              "name": "Cek Saldo Kredit",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/kredit/saldo", "host": ["{{base_url}}"], "path": ["pelanggan", "kredit", "saldo"] }
+              }
+            },
+            {
+              "name": "History Mutasi Kredit",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "url": { "raw": "{{base_url}}/pelanggan/kredit/history", "host": ["{{base_url}}"], "path": ["pelanggan", "kredit", "history"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Payment",
+          "item": [
+            {
+              "name": "Checkout",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id_pelanggan\": 1,\n  \"id_package\": 1\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/pelanggan/payments/checkout", "host": ["{{base_url}}"], "path": ["pelanggan", "payments", "checkout"] }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
