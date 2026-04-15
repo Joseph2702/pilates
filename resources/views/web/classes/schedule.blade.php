@@ -81,11 +81,8 @@
                 @elseif(!auth()->check())
                 <button onclick="openLoginModal()" class="w-full py-2.5 text-sm font-semibold bg-purple-500 hover:bg-purple-600 text-white tracking-widest uppercase transition">BOOK NOW</button>
                 @else
-                <form method="POST" action="{{ route('booking.store') }}">
-                    @csrf
-                    <input type="hidden" name="id_jadwal_kelas" value="{{ $jadwal->id_jadwal_kelas }}">
-                    <button type="submit" class="w-full py-2.5 text-sm font-semibold bg-purple-500 hover:bg-purple-600 text-white tracking-widest uppercase transition">BOOK NOW</button>
-                </form>
+                <a href="{{ route('booking.review', $jadwal->id_jadwal_kelas) }}"
+                    class="block w-full py-2.5 text-sm font-semibold bg-purple-500 hover:bg-purple-600 text-white tracking-widest uppercase transition text-center">BOOK NOW</a>
                 @endif
             </div>
         </div>

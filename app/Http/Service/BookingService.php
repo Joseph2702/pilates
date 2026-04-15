@@ -8,6 +8,7 @@ use App\Domain\Enums\BookingStatus;
 use App\Http\Repository\BookingRepository;
 use App\Http\Repository\JadwalKelasRepository;
 use App\Http\Service\CreditService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class BookingService
@@ -37,6 +38,16 @@ class BookingService
 
             if ((int) $jadwal->kuota_terisi >= (int) $jadwal->kuota_maksimal) {
                 throw new BusinessException('Jadwal sudah penuh', 422);
+            }
+
+            // Prevent duplicate booking for the same class
+            $alreadyBooked = Booking::where('id_pelanggan', $idPelanggan)
+                ->where('id_jadwal_kelas', $idJadwalKelas)
+                ->where('status_booking', '!=', BookingStatus::CANCELED->value)
+                ->exists();
+
+            if ($alreadyBooked) {
+                throw new BusinessException('Anda sudah memesan kelas ini', 422);
             }
 
             $this->credit->debit(
@@ -77,13 +88,19 @@ class BookingService
                 $this->jadwal->decrementKuotaTerisi($jadwal);
             }
 
-            $this->credit->credit(
-                idPelanggan: (int) $booking->id_pelanggan,
-                jumlah: $kreditRefund,
-                sumber: 'booking_refund',
-                idReferensi: $idBooking,
-                keterangan: 'Refund cancel booking #'.$idBooking,
-            );
+            // Only refund if cancellation is before the class day (H-1 or earlier)
+            $classDate = $jadwal ? Carbon::parse($jadwal->tanggal_kelas)->startOfDay() : null;
+            $isBeforeClassDay = $classDate && $classDate->gt(Carbon::today());
+
+            if ($isBeforeClassDay) {
+                $this->credit->credit(
+                    idPelanggan: (int) $booking->id_pelanggan,
+                    jumlah: $kreditRefund,
+                    sumber: 'booking_refund',
+                    idReferensi: $idBooking,
+                    keterangan: 'Refund cancel booking #'.$idBooking,
+                );
+            }
 
             return $this->bookings->update($booking, [
                 'status_booking' => BookingStatus::CANCELED->value,

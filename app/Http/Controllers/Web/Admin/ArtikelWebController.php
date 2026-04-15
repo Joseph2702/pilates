@@ -6,6 +6,7 @@ use App\Domain\Entity\Artikel;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ArtikelWebController extends Controller
 {
@@ -25,15 +26,29 @@ class ArtikelWebController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'judul_artikel' => 'required|string|max:255',
+        $request->validate([
+            'judul_artikel'  => 'required|string|max:255',
             'konten_artikel' => 'required|string',
+            'gambar_file'    => 'nullable|image|max:2048',
             'gambar_artikel' => 'nullable|string',
             'tanggal_publish' => 'nullable|date',
         ]);
 
-        $data['id_user'] = auth()->user()->id_user;
-        Artikel::create($data);
+        $gambar = null;
+        if ($request->hasFile('gambar_file')) {
+            $path = $request->file('gambar_file')->store('artikel', 'public');
+            $gambar = Storage::url($path);
+        } elseif ($request->filled('gambar_artikel')) {
+            $gambar = $request->gambar_artikel;
+        }
+
+        Artikel::create([
+            'id_user'        => auth()->user()->id_user,
+            'judul_artikel'  => $request->judul_artikel,
+            'konten_artikel' => $request->konten_artikel,
+            'gambar_artikel' => $gambar,
+            'tanggal_publish' => $request->tanggal_publish,
+        ]);
 
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil dibuat.');
     }
@@ -48,14 +63,30 @@ class ArtikelWebController extends Controller
     {
         $artikel = Artikel::findOrFail($id);
 
-        $data = $request->validate([
-            'judul_artikel' => 'required|string|max:255',
+        $request->validate([
+            'judul_artikel'  => 'required|string|max:255',
             'konten_artikel' => 'required|string',
+            'gambar_file'    => 'nullable|image|max:2048',
             'gambar_artikel' => 'nullable|string',
             'tanggal_publish' => 'nullable|date',
         ]);
 
-        $artikel->update($data);
+        $gambar = $artikel->gambar_artikel; // keep existing by default
+        if ($request->hasFile('gambar_file')) {
+            $path = $request->file('gambar_file')->store('artikel', 'public');
+            $gambar = Storage::url($path);
+        } elseif ($request->filled('gambar_artikel')) {
+            $gambar = $request->gambar_artikel;
+        } elseif ($request->input('gambar_artikel') === '') {
+            $gambar = null;
+        }
+
+        $artikel->update([
+            'judul_artikel'  => $request->judul_artikel,
+            'konten_artikel' => $request->konten_artikel,
+            'gambar_artikel' => $gambar,
+            'tanggal_publish' => $request->tanggal_publish,
+        ]);
 
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil diupdate.');
     }

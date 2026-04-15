@@ -26,10 +26,15 @@
 
             <p class="px-3 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Kelas Saya</p>
             <x-admin-nav-link href="{{ route('instruktur.jadwal.index') }}" :active="request()->routeIs('instruktur.jadwal.*')">
-                <x-icon name="calendar"/>Jadwal Kelas
+                <x-icon name="calendar"/>My Schedule
             </x-admin-nav-link>
             <x-admin-nav-link href="{{ route('instruktur.absensi.index') }}" :active="request()->routeIs('instruktur.absensi.*')">
-                <x-icon name="check-circle"/>Absensi
+                <x-icon name="check-circle"/>Absensi Hari Ini
+            </x-admin-nav-link>
+
+            <p class="px-3 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Akun</p>
+            <x-admin-nav-link href="{{ route('instruktur.profile.index') }}" :active="request()->routeIs('instruktur.profile.*')">
+                <x-icon name="user"/>My Profile
             </x-admin-nav-link>
         </nav>
 

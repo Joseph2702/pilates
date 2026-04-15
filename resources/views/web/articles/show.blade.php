@@ -43,7 +43,8 @@
                 prose-headings:font-black prose-headings:text-gray-900 prose-headings:mt-8 prose-headings:mb-3
                 prose-p:text-gray-600 prose-p:leading-relaxed
                 prose-a:text-purple-600 prose-a:no-underline hover:prose-a:underline
-                prose-strong:text-gray-900">
+                prose-strong:text-gray-900"
+                style="white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word;">
                 {!! $artikel->konten_artikel !!}
             </div>
         </div>

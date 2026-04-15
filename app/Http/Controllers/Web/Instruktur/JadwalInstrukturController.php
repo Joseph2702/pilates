@@ -12,10 +12,13 @@ class JadwalInstrukturController extends Controller
     {
         $instruktur = Auth::user()->instruktur;
 
-        $jadwalList = JadwalKelas::with('kelas')
+        // Group by month for My Schedule view — load bookings inline
+        $jadwalList = JadwalKelas::with(['kelas', 'bookings.pelanggan.user'])
+            ->withCount(['bookings' => fn ($q) => $q->where('status_booking', '!=', 'canceled')])
             ->where('id_instruktur', $instruktur->id_instruktur)
-            ->orderBy('tanggal_kelas', 'desc')
-            ->paginate(15);
+            ->orderBy('tanggal_kelas', 'asc')
+            ->orderBy('jam_mulai', 'asc')
+            ->paginate(10);
 
         return view('instruktur.jadwal.index', compact('jadwalList'));
     }
@@ -24,10 +27,16 @@ class JadwalInstrukturController extends Controller
     {
         $instruktur = Auth::user()->instruktur;
 
-        $jadwal = JadwalKelas::with(['kelas', 'bookings.pelanggan.user'])
+        $jadwal = JadwalKelas::with([
+            'kelas',
+            'bookings.pelanggan.user',
+            'bookings.absensi',
+        ])
             ->where('id_instruktur', $instruktur->id_instruktur)
             ->findOrFail($id);
 
-        return view('instruktur.jadwal.show', compact('jadwal'));
+        $bookings = $jadwal->bookings->where('status_booking', '!=', 'canceled');
+
+        return view('instruktur.jadwal.show', compact('jadwal', 'bookings'));
     }
 }

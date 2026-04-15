@@ -12,7 +12,12 @@ class BookingWebController extends Controller
     {
         $query = Booking::with(['pelanggan.user', 'jadwalKelas.kelas']);
 
-        if ($status = $request->get('status')) {
+        $status = $request->get('status');
+        if ($status === 'done') {
+            // done = booked but class date has passed
+            $query->where('status_booking', 'booked')
+                  ->whereHas('jadwalKelas', fn ($q) => $q->where('tanggal_kelas', '<', now()->startOfDay()));
+        } elseif ($status) {
             $query->where('status_booking', $status);
         }
 

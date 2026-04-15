@@ -8,10 +8,20 @@
 @section('content')
 <div class="max-w-3xl space-y-6">
     <div class="bg-white rounded-xl border border-gray-200 p-6">
+        @php
+            $isPastClass = $booking->jadwalKelas && \Carbon\Carbon::parse($booking->jadwalKelas->tanggal_kelas)->isPast();
+            $effectiveStatus = ($booking->status_booking === 'booked' && $isPastClass) ? 'done' : $booking->status_booking;
+            $statusColor = match($effectiveStatus) {
+                'done'     => 'gray',
+                'booked'   => 'green',
+                'canceled' => 'red',
+                default    => 'yellow',
+            };
+        @endphp
         <h3 class="font-semibold text-gray-800 mb-4">Info Booking</h3>
         <dl class="grid grid-cols-2 gap-4 text-sm">
             <div><dt class="text-gray-500">ID Booking</dt><dd class="font-medium text-gray-900">{{ $booking->id_booking }}</dd></div>
-            <div><dt class="text-gray-500">Status</dt><dd><x-badge :color="$booking->status_booking === 'confirmed' ? 'green' : ($booking->status_booking === 'canceled' ? 'red' : 'yellow')">{{ $booking->status_booking }}</x-badge></dd></div>
+            <div><dt class="text-gray-500">Status</dt><dd><x-badge :color="$statusColor">{{ strtoupper($effectiveStatus) }}</x-badge></dd></div>
             <div><dt class="text-gray-500">Pelanggan</dt><dd>{{ $booking->pelanggan?->user?->nama ?? '-' }}</dd></div>
             <div><dt class="text-gray-500">Email</dt><dd>{{ $booking->pelanggan?->user?->email ?? '-' }}</dd></div>
             <div><dt class="text-gray-500">Kelas</dt><dd>{{ $booking->jadwalKelas?->kelas?->nama_kelas ?? '-' }}</dd></div>

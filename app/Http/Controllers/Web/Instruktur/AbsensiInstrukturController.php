@@ -14,14 +14,16 @@ class AbsensiInstrukturController extends Controller
     public function index()
     {
         $instruktur = Auth::user()->instruktur;
+        $today = today();
 
         $jadwalList = JadwalKelas::with('kelas')
-            ->withCount('bookings')
+            ->withCount(['bookings' => fn ($q) => $q->where('status_booking', '!=', 'canceled')])
             ->where('id_instruktur', $instruktur->id_instruktur)
-            ->orderBy('tanggal_kelas', 'desc')
-            ->paginate(15);
+            ->whereDate('tanggal_kelas', $today)
+            ->orderBy('jam_mulai')
+            ->get();
 
-        return view('instruktur.absensi.index', compact('jadwalList'));
+        return view('instruktur.absensi.index', compact('jadwalList', 'today'));
     }
 
     public function show(int $idJadwal)

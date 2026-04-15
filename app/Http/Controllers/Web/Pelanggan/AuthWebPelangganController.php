@@ -18,6 +18,11 @@ class AuthWebPelangganController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
+            $user = Auth::user();
+            $isInstruktur = $user->roles()->wherePivot('is_active', true)->where('nama_role', 'instruktur')->exists();
+            if ($isInstruktur) {
+                return redirect()->route('instruktur.dashboard');
+            }
             return redirect()->route('profile.index');
         }
         return view('web.auth.login');
@@ -30,18 +35,24 @@ class AuthWebPelangganController extends Controller
             'password' => 'required',
         ]);
 
-        $redirectTo = $request->input('redirect_to', route('profile.index'));
-
         if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+            $user = Auth::user();
             $request->session()->regenerate();
 
             $this->activityLog->log(
-                Auth::id(),
+                $user->id_user,
                 'auth',
                 'login',
                 'Login via web'
             );
 
+            // Instruktur: always go to instruktur dashboard (ignore intended URL)
+            $isInstruktur = $user->roles()->wherePivot('is_active', true)->where('nama_role', 'instruktur')->exists();
+            if ($isInstruktur) {
+                return redirect()->route('instruktur.dashboard');
+            }
+
+            $redirectTo = $request->input('redirect_to', route('profile.index'));
             return redirect()->to($redirectTo);
         }
 
@@ -61,8 +72,11 @@ class AuthWebPelangganController extends Controller
         $request->validate([
             'nama'     => 'required|string|max:100',
             'email'    => 'required|email|unique:users,email',
-            'no_hp'    => 'nullable|string|max:20',
+            'no_hp'    => 'nullable|string|max:20|regex:/^[0-9]+$/|unique:users,no_hp',
             'password' => 'required|min:8|confirmed',
+        ], [
+            'no_hp.unique' => 'Nomor telepon sudah terdaftar.',
+            'no_hp.regex'  => 'Nomor telepon hanya boleh berisi angka.',
         ]);
 
         $user = User::create([

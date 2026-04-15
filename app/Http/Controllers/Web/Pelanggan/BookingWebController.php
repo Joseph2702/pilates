@@ -4,15 +4,34 @@ namespace App\Http\Controllers\Web\Pelanggan;
 
 use App\Common\Exception\BusinessException;
 use App\Domain\Entity\Booking;
+use App\Domain\Entity\JadwalKelas;
 use App\Domain\Entity\Pelanggan;
 use App\Http\Controllers\Controller;
 use App\Http\Service\BookingService;
+use App\Http\Service\CreditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BookingWebController extends Controller
 {
-    public function __construct(protected BookingService $bookings) {}
+    public function __construct(
+        protected BookingService $bookings,
+        protected CreditService $creditService,
+    ) {}
+
+    public function review(int $id)
+    {
+        $jadwal = JadwalKelas::with(['kelas', 'instruktur.user'])->findOrFail($id);
+
+        if ($jadwal->kuota_terisi >= $jadwal->kuota_maksimal) {
+            return redirect()->back()->with('error', 'Jadwal sudah penuh.');
+        }
+
+        $pelanggan = Pelanggan::where('id_user', Auth::id())->first();
+        $sisaKredit = $pelanggan ? $this->creditService->getSaldo($pelanggan->id_pelanggan) : 0;
+
+        return view('web.booking.review', compact('jadwal', 'sisaKredit'));
+    }
 
     public function store(Request $request)
     {

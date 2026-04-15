@@ -26,6 +26,10 @@ use App\Http\Controllers\Web\Pelanggan\ContactController;
 use App\Http\Controllers\Web\Pelanggan\HomeController;
 use App\Http\Controllers\Web\Pelanggan\PackagesWebController;
 use App\Http\Controllers\Web\Pelanggan\ProfileWebController;
+use App\Http\Controllers\Web\Instruktur\AuthInstrukturController;
+use App\Http\Controllers\Web\Instruktur\JadwalInstrukturController;
+use App\Http\Controllers\Web\Instruktur\AbsensiInstrukturController;
+use App\Http\Controllers\Web\Instruktur\ProfileInstrukturController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to web homepage
@@ -59,16 +63,21 @@ Route::post('/logout', [AuthWebPelangganController::class, 'logout'])->name('web
 
 // ─── Web (Pelanggan) Auth-Required Routes ─────────────────────────────────────
 Route::middleware(['auth', 'role.pelanggan'])->group(function () {
-    Route::get('/profile', [ProfileWebController::class, 'index'])->name('profile.index')->middleware('permission:profile.view');
+    Route::get('/booking/review/{id}', [PelangganBookingController::class, 'review'])->name('booking.review')->middleware('permission:booking.create');
+    Route::post('/booking', [PelangganBookingController::class, 'store'])->name('booking.store')->middleware('permission:booking.create');
+    Route::patch('/booking/{id}/cancel', [PelangganBookingController::class, 'cancel'])->name('booking.cancel')->middleware('permission:booking.cancel');
+});
+
+// Profile routes (auth only - instruktur will be redirected to instruktur panel by controller)
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileWebController::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ProfileWebController::class, 'edit'])->name('profile.edit')->middleware('permission:profile.update');
     Route::put('/profile', [ProfileWebController::class, 'update'])->name('profile.update')->middleware('permission:profile.update');
     Route::put('/profile/password', [ProfileWebController::class, 'updatePassword'])->name('profile.password')->middleware('permission:profile.change_password');
     Route::get('/profile/schedule', [ProfileWebController::class, 'schedule'])->name('profile.schedule')->middleware('permission:booking.view');
+    Route::get('/profile/bookings/{id}', [ProfileWebController::class, 'bookingDetail'])->name('profile.booking.show')->middleware('permission:booking.view');
     Route::get('/profile/packages', [ProfileWebController::class, 'packages'])->name('profile.packages')->middleware('permission:package.view');
     Route::get('/profile/transactions', [ProfileWebController::class, 'transactions'])->name('profile.transactions')->middleware('permission:transaction.view');
-
-    Route::post('/booking', [PelangganBookingController::class, 'store'])->name('booking.store')->middleware('permission:booking.create');
-    Route::patch('/booking/{id}/cancel', [PelangganBookingController::class, 'cancel'])->name('booking.cancel')->middleware('permission:booking.cancel');
 });
 
 // ─── Admin Auth ────────────────────────────────────────────────────────────────
@@ -175,4 +184,30 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role.admin'])->grou
 
     // Activity Logs
     Route::get('activity-logs', [ActivityLogWebController::class, 'index'])->name('activity-logs.index')->middleware('permission:activity_logs.view');
+});
+
+// ─── Instruktur Auth ────────────────────────────────────────────────────────────
+Route::get('/instruktur/login', [AuthInstrukturController::class, 'showLogin'])->name('instruktur.login');
+Route::post('/instruktur/login', [AuthInstrukturController::class, 'login']);
+Route::post('/instruktur/logout', [AuthInstrukturController::class, 'logout'])->name('instruktur.logout');
+
+// Instruktur Panel (auth required)
+Route::prefix('instruktur')->name('instruktur.')->middleware('auth')->group(function () {
+    Route::get('/', fn () => redirect()->route('instruktur.profile.index'))->name('dashboard');
+
+    // Jadwal Kelas (instruktur's own schedules)
+    Route::get('jadwal', [JadwalInstrukturController::class, 'index'])->name('jadwal.index');
+    Route::get('jadwal/{id}', [JadwalInstrukturController::class, 'show'])->name('jadwal.show');
+
+    // Absensi (accessed from My Schedule; no standalone index)
+    Route::get('absensi', fn () => redirect()->route('instruktur.jadwal.index'))->name('absensi.index');
+    Route::get('absensi/{id}', [AbsensiInstrukturController::class, 'show'])->name('absensi.show');
+    Route::post('absensi', [AbsensiInstrukturController::class, 'store'])->name('absensi.store');
+
+    // Profile
+    Route::get('profile', [ProfileInstrukturController::class, 'index'])->name('profile.index');
+    Route::get('profile/edit', [ProfileInstrukturController::class, 'edit'])->name('profile.edit');
+    Route::put('profile', [ProfileInstrukturController::class, 'update'])->name('profile.update');
+    Route::get('profile/change-password', [ProfileInstrukturController::class, 'editPassword'])->name('profile.change-password');
+    Route::put('profile/password', [ProfileInstrukturController::class, 'updatePassword'])->name('profile.update-password');
 });

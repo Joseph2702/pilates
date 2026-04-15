@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class InstrukturWebController extends Controller
 {
@@ -24,29 +23,19 @@ class InstrukturWebController extends Controller
 
     public function create()
     {
-        return view('admin.instruktur.create');
+        $availableUsers = User::whereNotIn('id_user', Instruktur::pluck('id_user'))->orderBy('nama')->get();
+        return view('admin.instruktur.create', compact('availableUsers'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nama'          => 'required|string|max:100',
-            'email'         => 'required|email|max:100|unique:users,email',
-            'password'      => 'required|string|min:6',
-            'no_hp'         => 'nullable|string|max:20',
-            'jenis_kelamin' => 'nullable|string|max:10',
-            'spesialisasi'  => 'nullable|string|max:50',
+            'id_user'      => 'required|integer|exists:users,id_user|unique:instruktur,id_user',
+            'spesialisasi' => 'nullable|string|max:50',
         ]);
 
         DB::transaction(function () use ($data) {
-            $user = User::create([
-                'nama'          => $data['nama'],
-                'email'         => $data['email'],
-                'password'      => Hash::make($data['password']),
-                'no_hp'         => $data['no_hp'] ?? null,
-                'jenis_kelamin' => $data['jenis_kelamin'] ?? null,
-                'status'        => 'active',
-            ]);
+            $user = User::findOrFail($data['id_user']);
 
             Instruktur::create([
                 'id_user'      => $user->id_user,
@@ -62,7 +51,7 @@ class InstrukturWebController extends Controller
             ]);
         });
 
-        return redirect()->route('admin.instruktur.index')->with('success', 'Akun instruktur berhasil dibuat.');
+        return redirect()->route('admin.instruktur.index')->with('success', 'Instruktur berhasil ditambahkan.');
     }
 
     public function edit(int $id)

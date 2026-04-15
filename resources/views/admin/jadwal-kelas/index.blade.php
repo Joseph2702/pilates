@@ -21,6 +21,7 @@
                     <th class="px-6 py-3 text-left">Tanggal</th>
                     <th class="px-6 py-3 text-left">Jam</th>
                     <th class="px-6 py-3 text-left">Kuota</th>
+                    <th class="px-6 py-3 text-left">Status</th>
                     <th class="px-6 py-3 text-left">Aksi</th>
                 </tr>
             </thead>
@@ -40,6 +41,19 @@
                         <span class="{{ $j->kuota_terisi >= $j->kuota_maksimal ? 'text-red-600 font-semibold' : '' }}">{{ $j->kuota_terisi }}/{{ $j->kuota_maksimal }}</span>
                     </td>
                     <td class="px-6 py-3">
+                        @php
+                            $jadwalPast = $j->tanggal_kelas && \Carbon\Carbon::parse($j->tanggal_kelas)->isPast();
+                            $jadwalToday = $j->tanggal_kelas && \Carbon\Carbon::parse($j->tanggal_kelas)->isToday();
+                        @endphp
+                        @if($jadwalPast)
+                            <x-badge color="gray">Done</x-badge>
+                        @elseif($jadwalToday)
+                            <x-badge color="green">Hari Ini</x-badge>
+                        @else
+                            <x-badge color="blue">Upcoming</x-badge>
+                        @endif
+                    </td>
+                    <td class="px-6 py-3">
                         <div class="flex items-center gap-2">
                             @if($permissions['canUpdate'])
                             <a href="{{ route('admin.jadwal-kelas.edit', $j->id_jadwal_kelas) }}" class="text-blue-600 hover:text-blue-800"><x-icon name="edit" class="w-4 h-4"/></a>
@@ -54,7 +68,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="7" class="px-6 py-8 text-center text-gray-400">Belum ada jadwal kelas.</td></tr>
+                <tr><td colspan="8" class="px-6 py-8 text-center text-gray-400">Belum ada jadwal kelas.</td></tr>
                 @endforelse
             </tbody>
         </table>

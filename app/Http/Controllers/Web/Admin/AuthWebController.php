@@ -28,14 +28,20 @@ class AuthWebController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::user();
             $request->session()->regenerate();
 
             $this->activityLog->log(
-                Auth::id(),
+                $user->id_user,
                 'auth',
                 'login',
                 'Login via admin panel'
             );
+
+            // If user is instruktur, redirect to instruktur panel
+            if ($user->instruktur) {
+                return redirect()->intended(route('instruktur.dashboard'));
+            }
 
             return redirect()->intended(route('admin.dashboard'));
         }

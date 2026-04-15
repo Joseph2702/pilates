@@ -12,7 +12,15 @@ class ActivityLogWebController extends Controller
     
     public function index()
     {
-        $logs = ActivityLog::with('user')->orderBy('tanggal_log', 'desc')->paginate(20);
+        $logs = ActivityLog::with('user')
+            ->whereHas('user', function ($q) {
+                $q->whereHas('roles', function ($r) {
+                    $r->where('nama_role', 'admin')->wherePivot('is_active', true);
+                });
+            })
+            ->orderBy('tanggal_log', 'desc')
+            ->paginate(20);
+
         $permissions = $this->buildPermissions('activity_logs');
         return view('admin.activity-logs.index', compact('logs', 'permissions'));
     }

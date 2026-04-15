@@ -23,8 +23,14 @@ class ProfileWebController extends Controller
 
     public function index()
     {
-        $pelanggan = $this->getPelanggan();
         $user = Auth::user();
+        $pelanggan = $this->getPelanggan();
+        $isInstruktur = $user->roles()->wherePivot('is_active', true)->where('nama_role', 'instruktur')->exists();
+
+        // If instruktur, redirect to instruktur dashboard
+        if ($isInstruktur) {
+            return redirect()->route('instruktur.dashboard');
+        }
 
         $activePembelian = $pelanggan
             ? PembelianPackage::with('package')
@@ -138,6 +144,16 @@ class ProfileWebController extends Controller
         ];
 
         return view('web.profile.transactions', compact('transaksiList', 'permissions'));
+    }
+
+    public function bookingDetail(int $id)
+    {
+        $pelanggan = $this->getPelanggan();
+        $booking = Booking::with(['jadwalKelas.kelas', 'jadwalKelas.instruktur.user', 'absensi'])
+            ->where('id_pelanggan', $pelanggan?->id_pelanggan ?? 0)
+            ->findOrFail($id);
+
+        return view('web.profile.booking-detail', compact('booking'));
     }
 
     public function edit()

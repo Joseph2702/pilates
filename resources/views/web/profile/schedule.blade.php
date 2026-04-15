@@ -44,6 +44,16 @@
                 @php
                     $jadwal = $booking->jadwalKelas;
                     $isPast = $jadwal && \Carbon\Carbon::parse($jadwal->tanggal_kelas)->isPast();
+                    $isToday = $jadwal && \Carbon\Carbon::parse($jadwal->tanggal_kelas)->isToday();
+                    $effectiveStatus = ($booking->status_booking === 'booked' && $isPast) ? 'done' : $booking->status_booking;
+                    $statusClass = match($effectiveStatus) {
+                        'done'     => 'bg-gray-100 text-gray-600',
+                        'booked'   => 'bg-green-100 text-green-700',
+                        'canceled' => 'bg-red-100 text-red-600',
+                        default    => 'bg-yellow-100 text-yellow-700',
+                    };
+                    $canCancel = $permissions['canCreateBooking'] && $booking->status_booking === 'booked' && !$isPast;
+                    $canRefund = $canCancel && !$isToday;
                 @endphp
                 <div class="border border-gray-200 p-5 flex items-center justify-between gap-4 {{ $isPast ? 'opacity-60' : '' }}">
                     <div class="flex items-center gap-4">
@@ -60,12 +70,13 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="text-xs font-semibold px-2.5 py-1
-                            {{ $booking->status_booking === 'booked' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600' }}">
-                            {{ ucfirst($booking->status_booking) }}
+                        <span class="text-xs font-semibold px-2.5 py-1 {{ $statusClass }}">
+                            {{ strtoupper($effectiveStatus) }}
                         </span>
-                        @if($permissions['canCreateBooking'] && $booking->status_booking === 'booked' && !$isPast)
-                        <form method="POST" action="{{ route('booking.cancel', $booking->id_booking) }}" onsubmit="return confirm('Cancel this booking?')">
+                        <a href="{{ route('profile.booking.show', $booking->id_booking) }}" class="text-xs text-gray-500 hover:text-purple-600 font-medium transition">Detail</a>
+                        @if($canCancel)
+                        <form method="POST" action="{{ route('booking.cancel', $booking->id_booking) }}"
+                            onsubmit="return confirm('{{ $canRefund ? 'Cancel this booking? Your credit will be refunded.' : 'Cancel this booking? No refund — cancellation is on the class day.' }}')">
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium transition">Cancel</button>
