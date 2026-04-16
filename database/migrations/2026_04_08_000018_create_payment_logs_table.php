@@ -16,6 +16,8 @@ return new class extends Migration
         });
     }
 
+/*************  ✨ Windsurf Command ⭐  *************/
+/*******  579ddb9a-e1ec-45ab-a78b-c67e1044b42b  *******/
     public function down(): void
     {
         Schema::dropIfExists('payment_logs');
