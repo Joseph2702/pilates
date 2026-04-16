@@ -65,7 +65,8 @@ class BookingWebController extends Controller
 
         try {
             $this->bookings->cancel($id);
-            return back()->with('success', 'Booking berhasil dibatalkan.');
+            return redirect()->route('profile.schedule', ['status' => 'canceled'])
+                ->with('success', 'Booking berhasil dibatalkan.');
         } catch (BusinessException $e) {
             return back()->with('error', $e->getMessage());
         }

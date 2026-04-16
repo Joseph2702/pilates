@@ -49,16 +49,17 @@
                             </p>
                         </div>
                         <div class="text-right shrink-0">
-                            <p class="text-2xl font-black {{ $isActive ? 'text-purple-600' : 'text-gray-400' }}">{{ $pembelian->sisa_kredit }}</p>
+                            <p class="text-2xl font-black {{ $isActive ? 'text-purple-600' : 'text-gray-400' }}">{{ $pembelian->getRemainingCredit() }}</p>
                             <p class="text-xs text-gray-400">/ {{ $pembelian->kredit_earned }} credits</p>
                         </div>
                     </div>
                     @if($isActive)
+                    @php $remainingCredit = $pembelian->getRemainingCredit(); @endphp
                     <div class="mt-3">
                         <div class="w-full bg-purple-100 h-1.5">
-                            <div class="bg-purple-500 h-1.5 transition-all" style="width: {{ $pembelian->kredit_earned > 0 ? ($pembelian->sisa_kredit / $pembelian->kredit_earned * 100) : 0 }}%"></div>
+                            <div class="bg-purple-500 h-1.5 transition-all" style="width: {{ $pembelian->kredit_earned > 0 ? ($remainingCredit / $pembelian->kredit_earned * 100) : 0 }}%"></div>
                         </div>
-                        <p class="text-xs text-purple-600 mt-1">{{ $pembelian->sisa_kredit }} credits remaining</p>
+                        <p class="text-xs text-purple-600 mt-1">{{ $remainingCredit }} credits remaining</p>
                     </div>
                     @endif
                     <div class="mt-3 flex items-center gap-4 text-xs text-gray-500">

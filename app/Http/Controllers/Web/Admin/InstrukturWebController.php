@@ -46,7 +46,7 @@ class InstrukturWebController extends Controller
                 ['nama_role' => 'instruktur'],
                 ['is_active' => true]
             );
-            $user->roles()->syncWithoutDetaching([
+            $user->roles()->sync([
                 $instrukturRole->id_role => ['is_active' => true],
             ]);
         });

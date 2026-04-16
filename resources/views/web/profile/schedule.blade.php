@@ -25,7 +25,7 @@
 
             {{-- Filter Tabs --}}
             <div class="flex gap-2 mb-6">
-                @foreach(['all' => 'All', 'confirmed' => 'Confirmed', 'cancelled' => 'Cancelled'] as $val => $label)
+                @foreach(['all' => 'All', 'booked' => 'Confirmed', 'canceled' => 'Cancelled'] as $val => $label)
                 <a href="{{ route('profile.schedule', ['status' => $val]) }}"
                     class="px-4 py-1.5 text-xs font-medium transition {{ request('status', 'all') === $val ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
                     {{ $label }}
