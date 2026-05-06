@@ -2,9 +2,11 @@
 @section('title', 'Permissions')
 
 @section('actions')
+@if($permissions['canCreate'])
 <a href="{{ route('admin.permissions.create') }}" class="inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition">
     <x-icon name="plus" class="w-4 h-4"/> Tambah Permission
 </a>
+@endif
 @endsection
 
 @section('content')
@@ -20,7 +22,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                @forelse($permissions as $perm)
+                @forelse($data as $perm)
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-3">{{ $perm->id_permission }}</td>
                     <td class="px-6 py-3 font-medium text-gray-900">{{ $perm->nama_permission }}</td>

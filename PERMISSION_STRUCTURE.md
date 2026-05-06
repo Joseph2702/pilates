@@ -2,7 +2,8 @@
 
 ## Overview
 
-Permission system di project ini **terdiri dari 2 domain terpisah**:
+Permission system di project ini **terdiri dari 2 
+domain terpisah**:
 
 ### **Domain 1: CMS (Admin)**
 - **Scope**: `/admin/*` routes saja

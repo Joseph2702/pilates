@@ -36,6 +36,11 @@ class BookingService
                 throw new BusinessException('Jadwal tidak ditemukan', 404);
             }
 
+            // Check if class has already started
+            if ($jadwal->jam_mulai && Carbon::parse($jadwal->jam_mulai)->isPast()) {
+                throw new BusinessException('Kelas sudah dimulai, tidak bisa booking lagi', 422);
+            }
+
             if ((int) $jadwal->kuota_terisi >= (int) $jadwal->kuota_maksimal) {
                 throw new BusinessException('Jadwal sudah penuh', 422);
             }

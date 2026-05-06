@@ -4,14 +4,18 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Domain\Entity\Permission;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
 
 class PermissionWebController extends Controller
 {
+    use PassPermissionsToView;
+
     public function index()
     {
-        $permissions = Permission::orderBy('nama_permission')->get();
-        return view('admin.permissions.index', compact('permissions'));
+        $data = Permission::orderBy('nama_permission')->get();
+        $permissions = $this->buildPermissions('permission');
+        return view('admin.permissions.index', compact('data', 'permissions'));
     }
 
     public function create()

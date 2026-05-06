@@ -5,11 +5,15 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Domain\Entity\Package;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\PassPermissionsToView;
+use App\Http\Service\ActivityLogService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PackageWebController extends Controller
 {
     use PassPermissionsToView;
+    
+    public function __construct(protected ActivityLogService $activityLog) {}
     
     public function index()
     {
@@ -34,6 +38,13 @@ class PackageWebController extends Controller
         ]);
 
         Package::create($data);
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'package',
+            'create',
+            'Membuat package baru: ' . $data['nama_package']
+        );
 
         return redirect()->route('admin.packages.index')->with('success', 'Package berhasil dibuat.');
     }
@@ -57,13 +68,30 @@ class PackageWebController extends Controller
         ]);
 
         $package->update($data);
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'package',
+            'update',
+            'Mengupdate package: ' . $data['nama_package']
+        );
 
         return redirect()->route('admin.packages.index')->with('success', 'Package berhasil diupdate.');
     }
 
     public function destroy(int $id)
     {
-        Package::findOrFail($id)->delete();
+        $package = Package::findOrFail($id);
+        $packageName = $package->nama_package;
+        $package->delete();
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'package',
+            'delete',
+            'Menghapus package: ' . $packageName
+        );
+        
         return redirect()->route('admin.packages.index')->with('success', 'Package berhasil dihapus.');
     }
 }

@@ -1,0 +1,131 @@
+No,Tabel,Kolom,Tipe Data,Panjang,Nullable,Constraint,Keterangan
+1,users,id_user,BIGINT,-,❌,PK,Auto increment
+2,users,nama,VARCHAR,100,✅,-,Nama user
+3,users,email,VARCHAR,100,❌,UNIQUE,Unique email
+4,users,email_verified_at,TIMESTAMP,-,✅,-,-
+5,users,password,VARCHAR,255,❌,-,Hashed password
+6,users,no_hp,VARCHAR,20,✅,-,Nomor HP
+7,users,jenis_kelamin,VARCHAR,10,✅,-,M/F
+8,users,tempat_lahir,VARCHAR,100,✅,-,-
+9,users,tanggal_lahir,DATE,-,✅,-,-
+10,users,foto_profile,TEXT,-,✅,-,URL or path
+11,users,status,VARCHAR,20,✅,-,active/inactive
+12,users,remember_token,VARCHAR,100,✅,-,-
+13,users,created_at,TIMESTAMP,-,❌,-,Auto
+14,users,updated_at,TIMESTAMP,-,❌,-,Auto
+15,roles,id_role,BIGINT,-,❌,PK,Auto increment
+16,roles,nama_role,VARCHAR,50,❌,UNIQUE,admin/instruktur/pelanggan
+17,roles,is_active,BOOLEAN,-,❌,-,Default: true
+18,roles,created_at,TIMESTAMP,-,❌,-,Auto
+19,permissions,id_permission,BIGINT,-,❌,PK,Auto increment
+20,permissions,nama_permission,VARCHAR,100,❌,UNIQUE,packages.create dll
+21,permissions,deskripsi,TEXT,-,✅,-,-
+22,package,id_package,BIGINT,-,❌,PK,Auto increment
+23,package,nama_package,VARCHAR,100,✅,-,Monthly/Annual
+24,package,jumlah_kredit,INT,-,✅,-,Jumlah credit
+25,package,harga,DECIMAL,"12,2",✅,-,Harga
+26,package,masa_berlaku,INT,-,✅,-,Hari
+27,package,status_package,VARCHAR,20,✅,-,active/inactive
+28,package,created_at,TIMESTAMP,-,❌,-,Auto
+29,package,updated_at,TIMESTAMP,-,❌,-,Auto
+30,promo,id_promo,BIGINT,-,❌,PK,Auto increment
+31,promo,kode_promo,VARCHAR,50,✅,-,DISC50
+32,promo,nama_promo,VARCHAR,100,✅,-,-
+33,promo,persenan_diskon,DECIMAL,"5,2",✅,-,% discount
+34,promo,tanggal_mulai,TIMESTAMP,-,✅,-,-
+35,promo,tanggal_selesai,TIMESTAMP,-,✅,-,-
+36,promo,status_promo,VARCHAR,20,✅,-,active/inactive
+37,promo,created_at,TIMESTAMP,-,❌,-,Auto
+38,promo,updated_at,TIMESTAMP,-,❌,-,Auto
+39,kelas,id_kelas,BIGINT,-,❌,PK,Auto increment
+40,kelas,nama_kelas,VARCHAR,100,✅,-,Yoga/Pilates
+41,kelas,deskripsi,TEXT,-,✅,-,-
+42,kelas,kapasitas,INT,-,✅,-,-
+43,kelas,created_at,TIMESTAMP,-,❌,-,Auto
+44,kelas,updated_at,TIMESTAMP,-,❌,-,Auto
+45,instruktur,id_instruktur,BIGINT,-,❌,PK,Auto increment
+46,instruktur,id_user,BIGINT,-,❌,FK users,-
+47,instruktur,spesialisasi,VARCHAR,50,✅,-,-
+48,pelanggan,id_pelanggan,BIGINT,-,❌,PK,Auto increment
+49,pelanggan,id_user,BIGINT,-,❌,FK users,-
+50,pelanggan,tanggal_daftar,TIMESTAMP,-,❌,-,Auto current
+51,user_roles,id_user,BIGINT,-,❌,FK users + PK,-
+52,user_roles,id_role,BIGINT,-,❌,FK roles + PK,-
+53,user_roles,is_active,BOOLEAN,-,❌,-,Default: true
+54,role_permissions,id_role,BIGINT,-,❌,FK roles + PK,-
+55,role_permissions,id_permission,BIGINT,-,❌,FK permissions + PK,-
+56,artikel,id_artikel,BIGINT,-,❌,PK,Auto increment
+57,artikel,id_user,BIGINT,-,✅,FK users,Author
+58,artikel,judul_artikel,VARCHAR,255,✅,-,-
+59,artikel,gambar_artikel,TEXT,-,✅,-,URL or path
+60,artikel,konten_artikel,TEXT,-,✅,-,HTML content
+61,artikel,tanggal_publish,TIMESTAMP,-,✅,-,-
+62,artikel,created_at,TIMESTAMP,-,❌,-,Auto
+63,artikel,updated_at,TIMESTAMP,-,❌,-,Auto
+64,activity_log,id_log,BIGINT,-,❌,PK,Auto increment
+65,activity_log,id_user,BIGINT,-,✅,FK users,-
+66,activity_log,modul,VARCHAR,100,✅,-,packages users dll
+67,activity_log,keterangan,TEXT,-,✅,-,-
+68,activity_log,aktivitas,VARCHAR,100,✅,-,create/update/delete
+69,activity_log,tanggal_log,TIMESTAMP,-,❌,-,Auto current
+70,jadwal_kelas,id_jadwal_kelas,BIGINT,-,❌,PK,Auto increment
+71,jadwal_kelas,id_kelas,BIGINT,-,❌,FK kelas,-
+72,jadwal_kelas,id_instruktur,BIGINT,-,✅,FK instruktur,-
+73,jadwal_kelas,tanggal_kelas,TIMESTAMP,-,✅,-,Class date
+74,jadwal_kelas,jam_mulai,TIMESTAMP,-,✅,-,Start time
+75,jadwal_kelas,jam_selesai,TIMESTAMP,-,✅,-,End time
+76,jadwal_kelas,kuota_maksimal,INT,-,✅,-,Max capacity
+77,jadwal_kelas,kuota_terisi,INT,-,❌,-,Default: 0
+78,jadwal_kelas,created_at,TIMESTAMP,-,❌,-,Auto
+79,jadwal_kelas,updated_at,TIMESTAMP,-,❌,-,Auto
+80,pembelian_package,id_pembelian_package,BIGINT,-,❌,PK,Auto increment
+81,pembelian_package,id_pelanggan,BIGINT,-,❌,FK pelanggan,-
+82,pembelian_package,id_package,BIGINT,-,❌,FK package,-
+83,pembelian_package,id_promo,BIGINT,-,✅,FK promo,-
+84,pembelian_package,harga_awal,DECIMAL,"12,2",✅,-,Original price
+85,pembelian_package,diskon,DECIMAL,"12,2",✅,-,Discount amount
+86,pembelian_package,harga_akhir,DECIMAL,"12,2",✅,-,Final price
+87,pembelian_package,status_pembelian,VARCHAR,20,✅,-,pending/paid/failed
+88,pembelian_package,kredit_earned,INT,-,✅,-,Credits granted
+89,pembelian_package,sisa_kredit,INT,-,✅,-,Remaining (STALE)
+90,pembelian_package,tanggal_pembelian,TIMESTAMP,-,❌,-,Auto current
+91,pembelian_package,tanggal_kadaluarsa,TIMESTAMP,-,✅,-,Expiry date
+92,booking,id_booking,BIGINT,-,❌,PK,Auto increment
+93,booking,id_pelanggan,BIGINT,-,❌,FK pelanggan,-
+94,booking,id_jadwal_kelas,BIGINT,-,❌,FK jadwal_kelas,-
+95,booking,status_booking,VARCHAR,20,✅,-,booked/canceled
+96,booking,tanggal_booking,TIMESTAMP,-,❌,-,Auto current
+97,booking,created_at,TIMESTAMP,-,❌,-,Auto
+98,booking,updated_at,TIMESTAMP,-,❌,-,Auto
+99,transaksi,id_transaksi,BIGINT,-,❌,PK,Auto increment
+100,transaksi,order_id,VARCHAR,100,❌,UNIQUE,PIL-12-ABCXYZ
+101,transaksi,id_pembelian_package,BIGINT,-,❌,FK pembelian_package,-
+102,transaksi,jumlah_bayar,DECIMAL,"12,2",✅,-,Payment amount
+103,transaksi,midtrans_order_id,VARCHAR,100,✅,-,Midtrans ID
+104,transaksi,snap_token,TEXT,-,✅,-,Midtrans token
+105,transaksi,transaction_status,VARCHAR,50,✅,-,settlement/pending
+106,transaksi,fraud_status,VARCHAR,50,✅,-,accept/deny
+107,transaksi,payment_type,VARCHAR,50,✅,-,bank_transfer/card
+108,transaksi,payment_response,JSON,-,✅,-,Full response
+109,transaksi,status_internal,VARCHAR,50,✅,-,pending/paid/failed
+110,transaksi,expired_at,TIMESTAMP,-,✅,-,Token expiry
+111,transaksi,created_at,TIMESTAMP,-,❌,-,Auto
+112,transaksi,INDEX,idx_transaksi_order_id,-,-,-,-
+113,mutasi_kredit,id_mutasi,BIGINT,-,❌,PK,Auto increment
+114,mutasi_kredit,id_pelanggan,BIGINT,-,❌,FK pelanggan,-
+115,mutasi_kredit,jenis_mutasi,VARCHAR,20,✅,-,debit/credit
+116,mutasi_kredit,jumlah_kredit,INT,-,✅,-,Amount
+117,mutasi_kredit,sumber_mutasi,VARCHAR,50,✅,-,booking/pembelian_package/booking_refund
+118,mutasi_kredit,id_referensi,BIGINT,-,✅,-,Reference ID
+119,mutasi_kredit,keterangan,TEXT,-,✅,-,Description
+120,mutasi_kredit,tanggal_mutasi,TIMESTAMP,-,❌,-,Auto current
+121,absensi,id_absensi,BIGINT,-,❌,PK,Auto increment
+122,absensi,id_booking,BIGINT,-,❌,FK booking,-
+123,absensi,status_kehadiran,VARCHAR,20,✅,-,hadir/tidak_hadir
+124,absensi,created_at,TIMESTAMP,-,❌,-,Auto
+125,absensi,updated_at,TIMESTAMP,-,❌,-,Auto
+126,payment_logs,id,BIGINT,-,❌,PK,Auto increment
+127,payment_logs,order_id,VARCHAR,100,✅,-,-
+128,payment_logs,raw_response,JSONB,-,✅,-,Full Midtrans response
+129,payment_logs,created_at,TIMESTAMP,-,❌,-,Auto
+130,payment_logs,INDEX,order_id,-,-,-,-

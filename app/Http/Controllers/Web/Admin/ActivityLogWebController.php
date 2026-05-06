@@ -15,7 +15,7 @@ class ActivityLogWebController extends Controller
         $logs = ActivityLog::with('user')
             ->whereHas('user', function ($q) {
                 $q->whereHas('roles', function ($r) {
-                    $r->where('nama_role', 'admin')->wherePivot('is_active', true);
+                    $r->where('roles.nama_role', 'admin')->where('user_roles.is_active', true);
                 });
             })
             ->orderBy('tanggal_log', 'desc')
