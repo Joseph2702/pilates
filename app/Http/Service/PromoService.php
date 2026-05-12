@@ -6,10 +6,14 @@ use App\Common\Exception\BusinessException;
 use App\Domain\Entity\Promo;
 use App\Http\Repository\PromoRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class PromoService
 {
-    public function __construct(protected PromoRepository $repository) {}
+    public function __construct(
+        protected PromoRepository $repository,
+        protected ActivityLogService $activityLog,
+    ) {}
 
     public function listAll(): Collection
     {
@@ -29,18 +33,44 @@ class PromoService
 
     public function create(array $data): Promo
     {
-        return $this->repository->create($data);
+        $promo = $this->repository->create($data);
+        
+        $this->activityLog->log(
+            Auth::id() ?? 0,
+            'promo',
+            'create',
+            'Membuat promo baru: ' . $data['nama_promo']
+        );
+        
+        return $promo;
     }
 
     public function update(int $id, array $data): Promo
     {
         $promo = $this->getOrFail($id);
-        return $this->repository->update($promo, $data);
+        $result = $this->repository->update($promo, $data);
+        
+        $this->activityLog->log(
+            Auth::id() ?? 0,
+            'promo',
+            'update',
+            'Mengupdate promo: ' . ($data['nama_promo'] ?? $promo->nama_promo)
+        );
+        
+        return $result;
     }
 
     public function delete(int $id): void
     {
         $promo = $this->getOrFail($id);
+        $promoName = $promo->nama_promo;
         $this->repository->delete($promo);
+        
+        $this->activityLog->log(
+            Auth::id() ?? 0,
+            'promo',
+            'delete',
+            'Menghapus promo: ' . $promoName
+        );
     }
 }

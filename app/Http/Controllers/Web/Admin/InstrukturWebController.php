@@ -6,13 +6,17 @@ use App\Domain\Entity\Instruktur;
 use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
 use App\Http\Controllers\Controller;
+use App\Http\Service\ActivityLogService;
 use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class InstrukturWebController extends Controller
 {
     use PassPermissionsToView;
+    
+    public function __construct(protected ActivityLogService $activityLog) {}
     
     public function index()
     {
@@ -50,6 +54,13 @@ class InstrukturWebController extends Controller
                 $instrukturRole->id_role => ['is_active' => true],
             ]);
         });
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'instruktur',
+            'create',
+            'Menambahkan instruktur baru'
+        );
 
         return redirect()->route('admin.instruktur.index')->with('success', 'Instruktur berhasil ditambahkan.');
     }
@@ -70,6 +81,13 @@ class InstrukturWebController extends Controller
         ]);
 
         $instruktur->update($data);
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'instruktur',
+            'update',
+            'Mengupdate instruktur'
+        );
 
         return redirect()->route('admin.instruktur.index')->with('success', 'Instruktur berhasil diupdate.');
     }
@@ -77,6 +95,14 @@ class InstrukturWebController extends Controller
     public function destroy(int $id)
     {
         Instruktur::findOrFail($id)->delete();
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'instruktur',
+            'delete',
+            'Menghapus instruktur'
+        );
+        
         return redirect()->route('admin.instruktur.index')->with('success', 'Instruktur berhasil dihapus.');
     }
 }

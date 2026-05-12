@@ -7,12 +7,14 @@ use App\Domain\Entity\Instruktur;
 use App\Http\Repository\InstrukturRepository;
 use App\Http\Repository\UserRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class InstrukturService
 {
     public function __construct(
         protected InstrukturRepository $repository,
         protected UserRepository $userRepo,
+        protected ActivityLogService $activityLog,
     ) {}
 
     public function list(): Collection
@@ -36,18 +38,43 @@ class InstrukturService
             throw new BusinessException('User sudah terdaftar sebagai instruktur', 422);
         }
 
-        return $this->repository->create($data);
+        $instruktur = $this->repository->create($data);
+        
+        $this->activityLog->log(
+            Auth::id() ?? 0,
+            'instruktur',
+            'create',
+            'Menambahkan instruktur baru'
+        );
+        
+        return $instruktur;
     }
 
     public function update(int $id, array $data): Instruktur
     {
         $instruktur = $this->getOrFail($id);
-        return $this->repository->update($instruktur, $data);
+        $result = $this->repository->update($instruktur, $data);
+        
+        $this->activityLog->log(
+            Auth::id() ?? 0,
+            'instruktur',
+            'update',
+            'Mengupdate data instruktur'
+        );
+        
+        return $result;
     }
 
     public function delete(int $id): void
     {
         $instruktur = $this->getOrFail($id);
         $this->repository->delete($instruktur);
+        
+        $this->activityLog->log(
+            Auth::id() ?? 0,
+            'instruktur',
+            'delete',
+            'Menghapus instruktur'
+        );
     }
 }

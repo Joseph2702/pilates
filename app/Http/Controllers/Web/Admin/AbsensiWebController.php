@@ -6,10 +6,13 @@ use App\Domain\Entity\Absensi;
 use App\Domain\Entity\Booking;
 use App\Domain\Entity\JadwalKelas;
 use App\Http\Controllers\Controller;
+use App\Http\Service\ActivityLogService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AbsensiWebController extends Controller
 {
+    public function __construct(protected ActivityLogService $activityLog) {}
     public function index()
     {
         $jadwalList = JadwalKelas::with(['kelas', 'instruktur.user'])
@@ -42,7 +45,14 @@ class AbsensiWebController extends Controller
             ['id_booking' => $data['id_booking']],
             ['status_kehadiran' => $data['status_kehadiran']],
         );
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'absensi',
+            'create/update',
+            'Mencatat absensi untuk booking ID: ' . $data['id_booking']
+        );
 
-        return back()->with('success', 'Absensi berhasil disimpan.');
+        return back()->with('success', 'Absensi berhasil disimpan');
     }
 }

@@ -6,12 +6,16 @@ use App\Domain\Entity\Instruktur;
 use App\Domain\Entity\JadwalKelas;
 use App\Domain\Entity\Kelas;
 use App\Http\Controllers\Controller;
+use App\Http\Service\ActivityLogService;
 use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class JadwalKelasWebController extends Controller
 {
     use PassPermissionsToView;
+    
+    public function __construct(protected ActivityLogService $activityLog) {}
     
     public function index()
     {
@@ -52,7 +56,15 @@ class JadwalKelasWebController extends Controller
         $data['tanggal_kelas'] = $data['tanggal_kelas'] . ' 00:00:00';
 
         $data['kuota_terisi'] = 0;
-        JadwalKelas::create($data);
+        $jadwal = JadwalKelas::create($data);
+        
+        $kelas = Kelas::findOrFail($data['id_kelas']);
+        $this->activityLog->log(
+            Auth::id(),
+            'jadwal_kelas',
+            'create',
+            'Membuat jadwal kelas baru untuk: ' . $kelas->nama_kelas
+        );
 
         return redirect()->route('admin.jadwal-kelas.index')->with('success', 'Jadwal kelas berhasil dibuat.');
     }
@@ -90,13 +102,31 @@ class JadwalKelasWebController extends Controller
         $data['tanggal_kelas'] = $data['tanggal_kelas'] . ' 00:00:00';
 
         $jadwal->update($data);
+        
+        $kelas = Kelas::findOrFail($data['id_kelas']);
+        $this->activityLog->log(
+            Auth::id(),
+            'jadwal_kelas',
+            'update',
+            'Mengupdate jadwal kelas untuk: ' . $kelas->nama_kelas
+        );
 
         return redirect()->route('admin.jadwal-kelas.index')->with('success', 'Jadwal kelas berhasil diupdate.');
     }
 
     public function destroy(int $id)
     {
-        JadwalKelas::findOrFail($id)->delete();
+        $jadwal = JadwalKelas::with('kelas')->findOrFail($id);
+        $kelasName = $jadwal->kelas->nama_kelas;
+        $jadwal->delete();
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'jadwal_kelas',
+            'delete',
+            'Menghapus jadwal kelas untuk: ' . $kelasName
+        );
+        
         return redirect()->route('admin.jadwal-kelas.index')->with('success', 'Jadwal kelas berhasil dihapus.');
     }
 }

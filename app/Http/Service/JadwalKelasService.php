@@ -6,10 +6,14 @@ use App\Common\Exception\BusinessException;
 use App\Domain\Entity\JadwalKelas;
 use App\Http\Repository\JadwalKelasRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class JadwalKelasService
 {
-    public function __construct(protected JadwalKelasRepository $repository) {}
+    public function __construct(
+        protected JadwalKelasRepository $repository,
+        protected ActivityLogService $activityLog,
+    ) {}
 
     public function listUpcoming(): Collection
     {
@@ -25,13 +29,30 @@ class JadwalKelasService
     public function create(array $data): JadwalKelas
     {
         $data['kuota_terisi'] = 0;
-        return JadwalKelas::create($data);
+        $jadwal = JadwalKelas::create($data);
+        
+        $this->activityLog->log(
+            Auth::id() ?? 0,
+            'jadwal_kelas',
+            'create',
+            'Membuat jadwal kelas baru'
+        );
+        
+        return $jadwal;
     }
 
     public function update(int $id, array $data): JadwalKelas
     {
         $jadwal = $this->getOrFail($id);
         $jadwal->update($data);
+        
+        $this->activityLog->log(
+            Auth::id() ?? 0,
+            'jadwal_kelas',
+            'update',
+            'Mengupdate jadwal kelas'
+        );
+        
         return $jadwal->fresh();
     }
 
@@ -39,6 +60,13 @@ class JadwalKelasService
     {
         $jadwal = $this->getOrFail($id);
         $jadwal->delete();
+        
+        $this->activityLog->log(
+            Auth::id() ?? 0,
+            'jadwal_kelas',
+            'delete',
+            'Menghapus jadwal kelas'
+        );
     }
 
     public function listByInstruktur(int $idInstruktur): Collection

@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Domain\Entity\Promo;
 use App\Http\Controllers\Controller;
+use App\Http\Service\ActivityLogService;
 use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PromoWebController extends Controller
 {
     use PassPermissionsToView;
+    
+    public function __construct(protected ActivityLogService $activityLog) {}
     
     public function index()
     {
@@ -35,6 +39,13 @@ class PromoWebController extends Controller
         ]);
 
         Promo::create($data);
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'promo',
+            'create',
+            'Membuat promo baru: ' . $data['nama_promo']
+        );
 
         return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil dibuat.');
     }
@@ -59,13 +70,30 @@ class PromoWebController extends Controller
         ]);
 
         $promo->update($data);
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'promo',
+            'update',
+            'Mengupdate promo: ' . $data['nama_promo']
+        );
 
         return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil diupdate.');
     }
 
     public function destroy(int $id)
     {
-        Promo::findOrFail($id)->delete();
+        $promo = Promo::findOrFail($id);
+        $promoName = $promo->nama_promo;
+        $promo->delete();
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'promo',
+            'delete',
+            'Menghapus promo: ' . $promoName
+        );
+        
         return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil dihapus.');
     }
 }

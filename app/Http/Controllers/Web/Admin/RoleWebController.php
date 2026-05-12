@@ -5,12 +5,16 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Domain\Entity\Permission;
 use App\Domain\Entity\Role;
 use App\Http\Controllers\Controller;
+use App\Http\Service\ActivityLogService;
 use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RoleWebController extends Controller
 {
     use PassPermissionsToView;
+    
+    public function __construct(protected ActivityLogService $activityLog) {}
     
     public function index()
     {
@@ -38,6 +42,13 @@ class RoleWebController extends Controller
         if (!empty($data['permissions'])) {
             $role->permissions()->sync($data['permissions']);
         }
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'role',
+            'create',
+            'Membuat role baru: ' . $data['nama_role']
+        );
 
         return redirect()->route('admin.roles.index')->with('success', 'Role berhasil dibuat.');
     }
@@ -72,13 +83,30 @@ class RoleWebController extends Controller
             $role->permissions()->sync([]);
             $role->users()->get()->each(fn ($user) => $user->clearPermissionCache());
         }
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'role',
+            'update',
+            'Mengupdate role: ' . $data['nama_role']
+        );
 
         return redirect()->route('admin.roles.index')->with('success', 'Role berhasil diupdate. Perubahan akan langsung berlaku untuk user dengan role ini.');
     }
 
     public function destroy(int $id)
     {
-        Role::findOrFail($id)->delete();
+        $role = Role::findOrFail($id);
+        $roleName = $role->nama_role;
+        $role->delete();
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'role',
+            'delete',
+            'Menghapus role: ' . $roleName
+        );
+        
         return redirect()->route('admin.roles.index')->with('success', 'Role berhasil dihapus.');
     }
 }

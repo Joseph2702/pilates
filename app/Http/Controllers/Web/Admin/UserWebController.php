@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
 use App\Http\Controllers\Controller;
+use App\Http\Service\ActivityLogService;
 use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserWebController extends Controller
 {
     use PassPermissionsToView;
+    
+    public function __construct(protected ActivityLogService $activityLog) {}
     
     public function index(Request $request)
     {
@@ -51,6 +55,13 @@ class UserWebController extends Controller
         if (!empty($data['roles'])) {
             $user->roles()->sync($data['roles']);
         }
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'user',
+            'create',
+            'Membuat user baru: ' . $data['nama']
+        );
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dibuat.');
     }
@@ -87,13 +98,30 @@ class UserWebController extends Controller
         if (isset($data['roles'])) {
             $user->roles()->sync($data['roles']);
         }
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'user',
+            'update',
+            'Mengupdate user: ' . $data['nama']
+        );
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil diupdate.');
     }
 
     public function destroy(int $id)
     {
-        User::findOrFail($id)->delete();
+        $user = User::findOrFail($id);
+        $userName = $user->nama;
+        $user->delete();
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'user',
+            'delete',
+            'Menghapus user: ' . $userName
+        );
+        
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
     }
 }

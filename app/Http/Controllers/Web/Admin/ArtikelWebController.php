@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Domain\Entity\Artikel;
 use App\Http\Controllers\Controller;
+use App\Http\Service\ActivityLogService;
 use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ArtikelWebController extends Controller
 {
     use PassPermissionsToView;
+    
+    public function __construct(protected ActivityLogService $activityLog) {}
     
     public function index()
     {
@@ -49,6 +53,13 @@ class ArtikelWebController extends Controller
             'gambar_artikel' => $gambar,
             'tanggal_publish' => $request->tanggal_publish,
         ]);
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'artikel',
+            'create',
+            'Membuat artikel baru: ' . $request->judul_artikel
+        );
 
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil dibuat.');
     }
@@ -87,13 +98,30 @@ class ArtikelWebController extends Controller
             'gambar_artikel' => $gambar,
             'tanggal_publish' => $request->tanggal_publish,
         ]);
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'artikel',
+            'update',
+            'Mengupdate artikel: ' . $request->judul_artikel
+        );
 
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil diupdate.');
     }
 
     public function destroy(int $id)
     {
-        Artikel::findOrFail($id)->delete();
+        $artikel = Artikel::findOrFail($id);
+        $judul = $artikel->judul_artikel;
+        $artikel->delete();
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'artikel',
+            'delete',
+            'Menghapus artikel: ' . $judul
+        );
+        
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil dihapus.');
     }
 }

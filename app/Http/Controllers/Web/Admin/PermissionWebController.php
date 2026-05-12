@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Domain\Entity\Permission;
 use App\Http\Controllers\Controller;
+use App\Http\Service\ActivityLogService;
 use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PermissionWebController extends Controller
 {
     use PassPermissionsToView;
+    
+    public function __construct(protected ActivityLogService $activityLog) {}
 
     public function index()
     {
@@ -31,6 +35,13 @@ class PermissionWebController extends Controller
         ]);
 
         Permission::create($data);
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'permission',
+            'create',
+            'Membuat permission baru: ' . $data['nama_permission']
+        );
 
         return redirect()->route('admin.permissions.index')->with('success', 'Permission berhasil dibuat.');
     }
@@ -51,13 +62,30 @@ class PermissionWebController extends Controller
         ]);
 
         $permission->update($data);
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'permission',
+            'update',
+            'Mengupdate permission: ' . $data['nama_permission']
+        );
 
         return redirect()->route('admin.permissions.index')->with('success', 'Permission berhasil diupdate.');
     }
 
     public function destroy(int $id)
     {
-        Permission::findOrFail($id)->delete();
+        $permission = Permission::findOrFail($id);
+        $permName = $permission->nama_permission;
+        $permission->delete();
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'permission',
+            'delete',
+            'Menghapus permission: ' . $permName
+        );
+        
         return redirect()->route('admin.permissions.index')->with('success', 'Permission berhasil dihapus.');
     }
 }

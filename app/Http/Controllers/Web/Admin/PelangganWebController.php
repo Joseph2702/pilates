@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Domain\Entity\Pelanggan;
 use App\Http\Controllers\Controller;
+use App\Http\Service\ActivityLogService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PelangganWebController extends Controller
 {
+    public function __construct(protected ActivityLogService $activityLog) {}
     public function index(Request $request)
     {
         $query = Pelanggan::with('user');
@@ -29,7 +32,17 @@ class PelangganWebController extends Controller
 
     public function destroy(int $id)
     {
-        Pelanggan::findOrFail($id)->delete();
+        $pelanggan = Pelanggan::with('user')->findOrFail($id);
+        $pelangganName = $pelanggan->user->nama ?? 'Unknown';
+        $pelanggan->delete();
+        
+        $this->activityLog->log(
+            Auth::id(),
+            'pelanggan',
+            'delete',
+            'Menghapus pelanggan: ' . $pelangganName
+        );
+        
         return redirect()->route('admin.pelanggan.index')->with('success', 'Pelanggan berhasil dihapus.');
     }
 }
