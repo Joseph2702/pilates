@@ -64,9 +64,13 @@ class BookingWebController extends Controller
         }
 
         try {
-            $this->bookings->cancel($id);
+            $result = $this->bookings->cancel($id);
+            $message = $result['credit_refunded']
+                ? 'Booking berhasil dibatalkan. Kredit telah dikembalikan.'
+                : 'Booking berhasil dibatalkan. Kredit tidak dikembalikan karena pembatalan kurang dari 24 jam sebelum kelas.';
+
             return redirect()->route('profile.schedule', ['status' => 'canceled'])
-                ->with('success', 'Booking berhasil dibatalkan.');
+                ->with('success', $message);
         } catch (BusinessException $e) {
             return back()->with('error', $e->getMessage());
         }

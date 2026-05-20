@@ -3,7 +3,9 @@
     "allow": [
       "Bash(composer dump-autoload:*)",
       "Bash(php artisan:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(php -l app/Http/Service/BookingService.php)",
+      "Bash(php -l app/Http/Controllers/BookingController.php)"
     ]
   }
 }

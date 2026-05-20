@@ -30,8 +30,12 @@ class BookingController extends Controller
 
     public function cancel(int $id): JsonResponse
     {
-        $booking = $this->bookings->cancel($id);
+        $result = $this->bookings->cancel($id);
 
-        return ApiResponse::success($booking, 'Booking dibatalkan');
+        $message = $result['credit_refunded']
+            ? 'Booking dibatalkan, kredit dikembalikan'
+            : 'Booking dibatalkan, kredit tidak dikembalikan (pembatalan kurang dari 24 jam sebelum kelas)';
+
+        return ApiResponse::success($result['booking'], $message);
     }
 }

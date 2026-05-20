@@ -75,7 +75,7 @@ class BookingService
         });
     }
 
-    public function cancel(int $idBooking, int $kreditRefund = 1): Booking
+    public function cancel(int $idBooking, int $kreditRefund = 1): array
     {
         return DB::transaction(function () use ($idBooking, $kreditRefund) {
             $booking = $this->bookings->findById($idBooking);
@@ -93,11 +93,11 @@ class BookingService
                 $this->jadwal->decrementKuotaTerisi($jadwal);
             }
 
-            // Only refund if cancellation is before the class day (H-1 or earlier)
-            $classDate = $jadwal ? Carbon::parse($jadwal->tanggal_kelas)->startOfDay() : null;
-            $isBeforeClassDay = $classDate && $classDate->gt(Carbon::today());
+            // Refund credit only if cancellation is made at least 24 hours before class start
+            $classStart = $jadwal && $jadwal->jam_mulai ? Carbon::parse($jadwal->jam_mulai) : null;
+            $isRefundable = $classStart && $classStart->gt(Carbon::now()->addHours(24));
 
-            if ($isBeforeClassDay) {
+            if ($isRefundable) {
                 $this->credit->credit(
                     idPelanggan: (int) $booking->id_pelanggan,
                     jumlah: $kreditRefund,
@@ -107,9 +107,11 @@ class BookingService
                 );
             }
 
-            return $this->bookings->update($booking, [
+            $booking = $this->bookings->update($booking, [
                 'status_booking' => BookingStatus::CANCELED->value,
             ]);
+
+            return ['booking' => $booking, 'credit_refunded' => $isRefundable];
         });
     }
 }
