@@ -17,13 +17,23 @@ class JadwalKelasWebController extends Controller
     
     public function __construct(protected ActivityLogService $activityLog) {}
     
-    public function index()
+    public function index(Request $request)
     {
-        $jadwalList = JadwalKelas::with(['kelas', 'instruktur.user'])
-            ->orderBy('tanggal_kelas', 'desc')->paginate(15);
-        
+        $filter = $request->get('filter', 'all');
+        $query = JadwalKelas::with(['kelas', 'instruktur.user']);
+
+        if ($filter === 'upcoming') {
+            $query->where('tanggal_kelas', '>', now()->startOfDay());
+        } elseif ($filter === 'today') {
+            $query->whereDate('tanggal_kelas', today());
+        } elseif ($filter === 'done') {
+            $query->where('tanggal_kelas', '<', now()->startOfDay());
+        }
+
+        $jadwalList = $query->orderBy('tanggal_kelas', $filter === 'done' ? 'desc' : 'asc')->paginate(15)->withQueryString();
+
         $permissions = $this->buildPermissions('jadwal_kelas');
-        return view('admin.jadwal-kelas.index', compact('jadwalList', 'permissions'));
+        return view('admin.jadwal-kelas.index', compact('jadwalList', 'permissions', 'filter'));
     }
 
     public function create()
@@ -49,9 +59,25 @@ class JadwalKelasWebController extends Controller
             return back()->withErrors(['jam_selesai' => 'Jam selesai harus lebih besar dari jam mulai'])->withInput();
         }
 
+        $jamMulai = $data['tanggal_kelas'] . ' ' . $data['jam_mulai'];
+        $jamSelesai = $data['tanggal_kelas'] . ' ' . $data['jam_selesai'];
+
+        // Prevent same instructor + same class + same date
+        $duplicate = JadwalKelas::where('id_instruktur', $data['id_instruktur'])
+            ->where('id_kelas', $data['id_kelas'])
+            ->where('tanggal_kelas', $data['tanggal_kelas'] . ' 00:00:00')
+            ->where(fn ($q) => $q->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
+                ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
+                ->orWhere(fn ($q2) => $q2->where('jam_mulai', '<=', $jamMulai)->where('jam_selesai', '>=', $jamSelesai))
+            )->exists();
+
+        if ($duplicate) {
+            return back()->withErrors(['id_kelas' => 'Jadwal dengan instruktur, kelas, dan waktu yang sama sudah ada.'])->withInput();
+        }
+
         // Combine tanggal_kelas + jam_mulai into timestamp
-        $data['jam_mulai'] = $data['tanggal_kelas'] . ' ' . $data['jam_mulai'];
-        $data['jam_selesai'] = $data['tanggal_kelas'] . ' ' . $data['jam_selesai'];
+        $data['jam_mulai'] = $jamMulai;
+        $data['jam_selesai'] = $jamSelesai;
         // tanggal_kelas stays as date only
         $data['tanggal_kelas'] = $data['tanggal_kelas'] . ' 00:00:00';
 
@@ -95,9 +121,26 @@ class JadwalKelasWebController extends Controller
             return back()->withErrors(['jam_selesai' => 'Jam selesai harus lebih besar dari jam mulai'])->withInput();
         }
 
+        $jamMulai = $data['tanggal_kelas'] . ' ' . $data['jam_mulai'];
+        $jamSelesai = $data['tanggal_kelas'] . ' ' . $data['jam_selesai'];
+
+        // Prevent same instructor + same class + same date (exclude current record)
+        $duplicate = JadwalKelas::where('id_instruktur', $data['id_instruktur'])
+            ->where('id_kelas', $data['id_kelas'])
+            ->where('tanggal_kelas', $data['tanggal_kelas'] . ' 00:00:00')
+            ->where('id_jadwal_kelas', '!=', $id)
+            ->where(fn ($q) => $q->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
+                ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
+                ->orWhere(fn ($q2) => $q2->where('jam_mulai', '<=', $jamMulai)->where('jam_selesai', '>=', $jamSelesai))
+            )->exists();
+
+        if ($duplicate) {
+            return back()->withErrors(['id_kelas' => 'Jadwal dengan instruktur, kelas, dan waktu yang sama sudah ada.'])->withInput();
+        }
+
         // Combine tanggal_kelas + jam_mulai into timestamp
-        $data['jam_mulai'] = $data['tanggal_kelas'] . ' ' . $data['jam_mulai'];
-        $data['jam_selesai'] = $data['tanggal_kelas'] . ' ' . $data['jam_selesai'];
+        $data['jam_mulai'] = $jamMulai;
+        $data['jam_selesai'] = $jamSelesai;
         // tanggal_kelas stays as date only
         $data['tanggal_kelas'] = $data['tanggal_kelas'] . ' 00:00:00';
 

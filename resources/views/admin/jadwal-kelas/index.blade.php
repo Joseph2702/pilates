@@ -10,6 +10,16 @@
 @endsection
 
 @section('content')
+{{-- Filter Tabs --}}
+<div class="flex gap-2 mb-4">
+    @foreach(['all' => 'Semua', 'upcoming' => 'Upcoming', 'today' => 'Hari Ini', 'done' => 'Done'] as $val => $label)
+    <a href="{{ route('admin.jadwal-kelas.index', ['filter' => $val]) }}"
+        class="px-4 py-1.5 text-xs font-medium rounded transition {{ ($filter ?? 'all') === $val ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+        {{ $label }}
+    </a>
+    @endforeach
+</div>
+
 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -42,13 +52,13 @@
                     </td>
                     <td class="px-6 py-3">
                         @php
-                            $jadwalPast = $j->tanggal_kelas && \Carbon\Carbon::parse($j->tanggal_kelas)->isPast();
                             $jadwalToday = $j->tanggal_kelas && \Carbon\Carbon::parse($j->tanggal_kelas)->isToday();
+                            $jadwalPast = $j->tanggal_kelas && !$jadwalToday && \Carbon\Carbon::parse($j->tanggal_kelas)->startOfDay()->lt(now()->startOfDay());
                         @endphp
-                        @if($jadwalPast)
-                            <x-badge color="gray">Done</x-badge>
-                        @elseif($jadwalToday)
+                        @if($jadwalToday)
                             <x-badge color="green">Hari Ini</x-badge>
+                        @elseif($jadwalPast)
+                            <x-badge color="gray">Done</x-badge>
                         @else
                             <x-badge color="blue">Upcoming</x-badge>
                         @endif

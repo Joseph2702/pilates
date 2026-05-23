@@ -22,15 +22,9 @@ class RolePelanggan
             ->wherePivot('is_active', true)
             ->exists();
 
-        // If user is admin, redirect them to admin dashboard instead
-        $hasAdminRole = $user->roles()
-            ->where('nama_role', 'admin')
-            ->wherePivot('is_active', true)
-            ->exists();
-
-        if ($hasAdminRole) {
+        if ($user->isAdminAreaUser()) {
             return redirect()->route('admin.dashboard')
-                ->with('info', 'Anda adalah admin, silahkan akses admin panel.');
+                ->with('info', 'Silahkan akses admin panel.');
         }
 
         if (!$hasPelangganRole) {

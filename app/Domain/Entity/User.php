@@ -80,6 +80,26 @@ class User extends Authenticatable
         return $this->hasMany(ActivityLog::class, 'id_user', 'id_user');
     }
 
+    /**
+     * Returns true for any user whose role is in the admin area:
+     * the core 'admin' role and all sub-admin roles (anything that is
+     * not 'pelanggan' or 'instruktur'). Works without the core_type
+     * column migration — safe to use until full hierarchy is applied.
+     */
+    public function isAdminAreaUser(): bool
+    {
+        $activeRoles = $this->roles()->wherePivot('is_active', true)->pluck('nama_role');
+
+        if ($activeRoles->isEmpty()) {
+            return false;
+        }
+
+        $corePublicRoles = ['pelanggan', 'instruktur'];
+
+        // Has at least one role that is not a public/customer-facing role
+        return $activeRoles->diff($corePublicRoles)->isNotEmpty();
+    }
+
     public function hasPermission(string $permission): bool
     {
         // Check permission directly from database (no caching)

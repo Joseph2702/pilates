@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Domain\Entity\Pelanggan;
 use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
 use App\Http\Controllers\Controller;
@@ -54,8 +55,14 @@ class UserWebController extends Controller
 
         if (!empty($data['roles'])) {
             $user->roles()->sync($data['roles']);
+
+            $pelangganRole = Role::where('nama_role', 'pelanggan')->first();
+            $hasPelangganRole = $pelangganRole && in_array($pelangganRole->id_role, array_map('intval', $data['roles']));
+            if ($hasPelangganRole && !Pelanggan::where('id_user', $user->id_user)->exists()) {
+                Pelanggan::create(['id_user' => $user->id_user, 'tanggal_daftar' => now()]);
+            }
         }
-        
+
         $this->activityLog->log(
             Auth::id(),
             'user',
@@ -97,8 +104,14 @@ class UserWebController extends Controller
 
         if (isset($data['roles'])) {
             $user->roles()->sync($data['roles']);
+
+            $pelangganRole = Role::where('nama_role', 'pelanggan')->first();
+            $hasPelangganRole = $pelangganRole && in_array($pelangganRole->id_role, array_map('intval', $data['roles']));
+            if ($hasPelangganRole && !Pelanggan::where('id_user', $user->id_user)->exists()) {
+                Pelanggan::create(['id_user' => $user->id_user, 'tanggal_daftar' => now()]);
+            }
         }
-        
+
         $this->activityLog->log(
             Auth::id(),
             'user',

@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\Web\Instruktur;
 
-use App\Domain\Entity\Absensi;
+use App\Common\Exception\BusinessException;
 use App\Domain\Entity\Booking;
 use App\Domain\Entity\JadwalKelas;
 use App\Http\Controllers\Controller;
+use App\Http\Service\AbsensiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AbsensiInstrukturController extends Controller
 {
+    public function __construct(protected AbsensiService $absensiService) {}
     public function index()
     {
         $instruktur = Auth::user()->instruktur;
@@ -57,10 +59,11 @@ class AbsensiInstrukturController extends Controller
             abort(403, 'Anda tidak memiliki akses ke booking ini.');
         }
 
-        Absensi::updateOrCreate(
-            ['id_booking' => $data['id_booking']],
-            ['status_kehadiran' => $data['status_kehadiran']],
-        );
+        try {
+            $this->absensiService->markAttendance($data['id_booking'], $data['status_kehadiran']);
+        } catch (BusinessException $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
         return back()->with('success', 'Absensi berhasil disimpan.');
     }

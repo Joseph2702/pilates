@@ -24,9 +24,6 @@
         <div class="bg-white border border-gray-200 p-8 flex flex-col hover:border-purple-300 hover:shadow-sm transition">
             <div class="flex items-start justify-between mb-3">
                 <p class="font-bold text-gray-900 text-lg">{{ $pkg->nama_package }}</p>
-                @if($i === 0)
-                <span class="text-xs bg-purple-100 text-purple-600 px-3 py-1 font-semibold tracking-widest uppercase shrink-0 ml-3">ONE TIME PURCHASE</span>
-                @endif
             </div>
             <p class="text-4xl font-black text-gray-900 mb-6">Rp{{ number_format($pkg->harga, 0, ',', '.') }}</p>
             <ul class="space-y-3 text-sm text-gray-600 flex-1 mb-8">
@@ -44,16 +41,10 @@
                 </li>
             </ul>
             @auth
-                @if(in_array($pkg->id_package, $purchasedIds))
-                <span class="block text-center bg-gray-200 text-gray-500 py-3 text-sm font-semibold tracking-widest uppercase cursor-not-allowed">
-                    Purchased
-                </span>
-                @else
                 <a href="{{ route('packages.checkout', $pkg->id_package) }}"
                     class="block text-center bg-purple-500 hover:bg-purple-600 text-white py-3 text-sm font-semibold tracking-widest uppercase transition">
                     Purchase
                 </a>
-                @endif
             @else
             <button onclick="openLoginModal()"
                 class="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 text-sm font-semibold tracking-widest uppercase transition">
@@ -76,7 +67,7 @@
     <div class="divide-y divide-gray-200">
         @foreach([
             ['Do class packs expire?', 'Yes, to encourage regular practice and maintain studio capacity, 5-class packs expire after 3 months and 10-class packs expire after 6 months from the date of purchase.'],
-            ['What is the cancellation policy?', 'We require a 12-hour notice for group class cancellations. Late cancellations or no-shows will result in the loss of that class credit for packs or a small fee for unlimited members.'],
+            ['What is the cancellation policy?', 'We require a 24-hour notice for group class cancellations. Late cancellations or no-shows will result in the loss of that class credit for packs or a small fee for unlimited members.'],
             ['Can I share my class pack with a friend?', 'Class packs are assigned to an individual profile and are non-transferable. However, Unlimited members receive 2 guest passes each month.'],
             ['What is the Studio Etiquette?', 'We ask all students to arrive 5-10 minutes early. Grip socks are mandatory for safety and hygiene. Please leave mobile phones in the provided lockers.'],
         ] as $faq)

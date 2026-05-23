@@ -15,6 +15,16 @@
 
         <div class="lg:col-span-3 space-y-4">
 
+            {{-- Filter Tabs --}}
+            <div class="flex gap-2 mb-4">
+                @foreach(['upcoming' => 'Upcoming', 'done' => 'Done'] as $val => $label)
+                <a href="{{ route('instruktur.jadwal.index', ['filter' => $val]) }}"
+                    class="px-4 py-1.5 text-xs font-medium transition {{ ($filter ?? 'upcoming') === $val ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                    {{ $label }}
+                </a>
+                @endforeach
+            </div>
+
             @forelse($jadwalList as $j)
             @php
                 $isToday = $j->tanggal_kelas && \Carbon\Carbon::parse($j->tanggal_kelas)->isToday();
@@ -85,7 +95,7 @@
             </div>
             @endforelse
 
-            <div>{{ $jadwalList->links() }}</div>
+            <div>{{ $jadwalList->withQueryString()->links() }}</div>
 
         </div>
     </div>

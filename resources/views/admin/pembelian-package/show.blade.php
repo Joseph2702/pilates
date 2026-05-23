@@ -25,14 +25,15 @@
         </dl>
     </div>
 
-    @if($pembelian->transaksi)
+    @php $transaksi = $pembelian->transaksi->first(); @endphp
+    @if($transaksi)
     <div class="bg-white rounded-xl border border-gray-200 p-6">
         <h3 class="font-semibold text-gray-800 mb-4">Transaksi Terkait</h3>
         <dl class="grid grid-cols-2 gap-4 text-sm">
-            <div><dt class="text-gray-500">Order ID</dt><dd class="font-mono text-xs">{{ $pembelian->transaksi->order_id }}</dd></div>
-            <div><dt class="text-gray-500">Status</dt><dd><x-badge :color="$pembelian->transaksi->status_internal === 'paid' ? 'green' : 'yellow'">{{ $pembelian->transaksi->status_internal }}</x-badge></dd></div>
-            <div><dt class="text-gray-500">Jumlah Bayar</dt><dd>Rp {{ number_format($pembelian->transaksi->jumlah_bayar, 0, ',', '.') }}</dd></div>
-            <div><dt class="text-gray-500">Payment Type</dt><dd>{{ $pembelian->transaksi->payment_type ?? '-' }}</dd></div>
+            <div><dt class="text-gray-500">Order ID</dt><dd class="font-mono text-xs">{{ $transaksi->order_id }}</dd></div>
+            <div><dt class="text-gray-500">Status</dt><dd><x-badge :color="$transaksi->status_internal === 'paid' ? 'green' : 'yellow'">{{ $transaksi->status_internal }}</x-badge></dd></div>
+            <div><dt class="text-gray-500">Jumlah Bayar</dt><dd>Rp {{ number_format($transaksi->jumlah_bayar, 0, ',', '.') }}</dd></div>
+            <div><dt class="text-gray-500">Payment Type</dt><dd>{{ $transaksi->payment_type ?? '-' }}</dd></div>
         </dl>
     </div>
     @endif

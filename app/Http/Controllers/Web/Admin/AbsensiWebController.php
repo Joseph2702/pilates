@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
-use App\Domain\Entity\Absensi;
+use App\Common\Exception\BusinessException;
 use App\Domain\Entity\Booking;
 use App\Domain\Entity\JadwalKelas;
 use App\Http\Controllers\Controller;
+use App\Http\Service\AbsensiService;
 use App\Http\Service\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AbsensiWebController extends Controller
 {
-    public function __construct(protected ActivityLogService $activityLog) {}
+    public function __construct(
+        protected ActivityLogService $activityLog,
+        protected AbsensiService $absensiService,
+    ) {}
     public function index()
     {
         $jadwalList = JadwalKelas::with(['kelas', 'instruktur.user'])
@@ -41,11 +45,12 @@ class AbsensiWebController extends Controller
             'status_kehadiran' => 'required|string|in:hadir,tidak_hadir',
         ]);
 
-        Absensi::updateOrCreate(
-            ['id_booking' => $data['id_booking']],
-            ['status_kehadiran' => $data['status_kehadiran']],
-        );
-        
+        try {
+            $this->absensiService->markAttendance($data['id_booking'], $data['status_kehadiran']);
+        } catch (BusinessException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
         $this->activityLog->log(
             Auth::id(),
             'absensi',

@@ -21,7 +21,7 @@ class DashboardController extends Controller
             'total_packages' => Package::where('status_package', 'active')->count(),
             'total_bookings' => Booking::count(),
             'total_transaksi' => Transaksi::count(),
-            'jadwal_upcoming' => JadwalKelas::where('tanggal_kelas', '>=', now())->count(),
+            'jadwal_upcoming' => JadwalKelas::where('tanggal_kelas', '>=', now()->startOfDay())->count(),
             'pembelian_pending' => PembelianPackage::where('status_pembelian', 'pending')->count(),
             'revenue' => Transaksi::where('status_internal', 'paid')->sum('jumlah_bayar'),
         ];

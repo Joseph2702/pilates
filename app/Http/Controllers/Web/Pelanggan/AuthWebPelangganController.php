@@ -23,6 +23,9 @@ class AuthWebPelangganController extends Controller
             if ($isInstruktur) {
                 return redirect()->route('instruktur.dashboard');
             }
+            if ($user->isAdminAreaUser()) {
+                return redirect()->route('admin.dashboard');
+            }
             return redirect()->route('profile.index');
         }
         return view('web.auth.login');
@@ -46,10 +49,15 @@ class AuthWebPelangganController extends Controller
                 'Login via web'
             );
 
-            // Instruktur: always go to instruktur dashboard (ignore intended URL)
+            // Instruktur: always go to instruktur dashboard
             $isInstruktur = $user->roles()->wherePivot('is_active', true)->where('nama_role', 'instruktur')->exists();
             if ($isInstruktur) {
                 return redirect()->route('instruktur.dashboard');
+            }
+
+            // Admin-area users (core admin + all sub-admin roles): go to admin dashboard
+            if ($user->isAdminAreaUser()) {
+                return redirect()->route('admin.dashboard');
             }
 
             $redirectTo = $request->input('redirect_to', route('profile.index'));

@@ -7,6 +7,7 @@ use App\Domain\Entity\Package;
 use App\Domain\Entity\Pelanggan;
 use App\Domain\Entity\PembelianPackage;
 use App\Domain\Entity\Promo;
+
 use App\Http\Controllers\Controller;
 use App\Http\Service\PaymentService;
 use Illuminate\Http\Request;
@@ -20,34 +21,12 @@ class PackagesWebController extends Controller
     {
         $packages = Package::where('status_package', 'active')->orderBy('harga')->get();
 
-        $purchasedIds = [];
-        if (Auth::check()) {
-            $pelanggan = Pelanggan::where('id_user', Auth::id())->first();
-            $oneTimePackage = Package::where('status_package', 'active')->orderBy('harga')->first();
-            if ($pelanggan && $oneTimePackage) {
-                $alreadyBought = PembelianPackage::where('id_pelanggan', $pelanggan->id_pelanggan)
-                    ->where('id_package', $oneTimePackage->id_package)
-                    ->where('status_pembelian', 'paid')
-                    ->exists();
-                if ($alreadyBought) {
-                    $purchasedIds = [$oneTimePackage->id_package];
-                }
-            }
-        }
-
-        return view('web.packages.index', compact('packages', 'purchasedIds'));
+        return view('web.packages.index', compact('packages'));
     }
 
     public function checkout(int $id)
     {
         $package = Package::where('status_package', 'active')->findOrFail($id);
-
-        if (Auth::check() && $this->isOneTimePackage($id)) {
-            $pelanggan = Pelanggan::where('id_user', Auth::id())->first();
-            if ($pelanggan && $this->alreadyPurchased($pelanggan->id_pelanggan, $id)) {
-                return redirect()->route('packages.index')->with('error', 'Kamu sudah pernah membeli package ini.');
-            }
-        }
 
         return view('web.packages.checkout', compact('package'));
     }
@@ -63,10 +42,6 @@ class PackagesWebController extends Controller
         $pelanggan = Pelanggan::where('id_user', Auth::id())->first();
         if (! $pelanggan) {
             return back()->with('error', 'Akun pelanggan tidak ditemukan.');
-        }
-
-        if ($this->isOneTimePackage($id) && $this->alreadyPurchased($pelanggan->id_pelanggan, $id)) {
-            return redirect()->route('packages.index')->with('error', 'Kamu sudah pernah membeli package ini.');
         }
 
         $kodePromo = $request->input('kode_promo');
@@ -155,17 +130,4 @@ class PackagesWebController extends Controller
         ]);
     }
 
-    private function isOneTimePackage(int $idPackage): bool
-    {
-        $cheapest = Package::where('status_package', 'active')->orderBy('harga')->first();
-        return $cheapest && $cheapest->id_package === $idPackage;
-    }
-
-    private function alreadyPurchased(int $idPelanggan, int $idPackage): bool
-    {
-        return PembelianPackage::where('id_pelanggan', $idPelanggan)
-            ->where('id_package', $idPackage)
-            ->where('status_pembelian', 'paid')
-            ->exists();
-    }
 }

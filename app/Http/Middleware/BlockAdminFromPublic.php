@@ -20,15 +20,8 @@ class BlockAdminFromPublic
         $user = $request->user();
 
         // If user is authenticated and has admin role, redirect to admin dashboard
-        if ($user) {
-            $hasAdminRole = $user->roles()
-                ->where('nama_role', 'admin')
-                ->wherePivot('is_active', true)
-                ->exists();
-
-            if ($hasAdminRole) {
-                return redirect()->route('admin.dashboard');
-            }
+        if ($user && $user->isAdminAreaUser()) {
+            return redirect()->route('admin.dashboard');
         }
 
         return $next($request);

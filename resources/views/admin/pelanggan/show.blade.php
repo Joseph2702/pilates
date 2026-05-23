@@ -16,6 +16,7 @@
             <div><dt class="text-gray-500">No HP</dt><dd>{{ $pelanggan->user?->no_hp ?? '-' }}</dd></div>
             <div><dt class="text-gray-500">Jenis Kelamin</dt><dd>{{ $pelanggan->user?->jenis_kelamin ?? '-' }}</dd></div>
             <div><dt class="text-gray-500">Tanggal Daftar</dt><dd>{{ $pelanggan->tanggal_daftar ? \Carbon\Carbon::parse($pelanggan->tanggal_daftar)->format('d M Y') : '-' }}</dd></div>
+            <div><dt class="text-gray-500">Sisa Kredit</dt><dd class="font-semibold text-purple-700 text-base">{{ $sisaKredit }}</dd></div>
         </dl>
     </div>
 
@@ -65,10 +66,15 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse($pelanggan->bookings as $b)
+                        @php
+                            $isPast = $b->jadwalKelas && \Carbon\Carbon::parse($b->jadwalKelas->tanggal_kelas)->startOfDay()->isPast() && !\Carbon\Carbon::parse($b->jadwalKelas->tanggal_kelas)->isToday();
+                            $effectiveStatus = ($b->status_booking === 'booked' && $isPast) ? 'done' : $b->status_booking;
+                            $badgeColor = match($effectiveStatus) { 'done' => 'gray', 'booked' => 'green', 'canceled' => 'red', default => 'yellow' };
+                        @endphp
                         <tr>
                             <td class="px-6 py-3">{{ $b->jadwalKelas?->kelas?->nama_kelas ?? '-' }}</td>
                             <td class="px-6 py-3">{{ $b->jadwalKelas?->tanggal_kelas ? \Carbon\Carbon::parse($b->jadwalKelas->tanggal_kelas)->format('d M Y') : '-' }}</td>
-                            <td class="px-6 py-3"><x-badge :color="$b->status_booking === 'confirmed' ? 'green' : ($b->status_booking === 'canceled' ? 'red' : 'yellow')">{{ $b->status_booking }}</x-badge></td>
+                            <td class="px-6 py-3"><x-badge :color="$badgeColor">{{ strtoupper($effectiveStatus) }}</x-badge></td>
                         </tr>
                         @empty
                         <tr><td colspan="3" class="px-6 py-4 text-center text-gray-400">Belum ada booking.</td></tr>

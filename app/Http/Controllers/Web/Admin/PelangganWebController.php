@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Domain\Entity\MutasiKredit;
 use App\Domain\Entity\Pelanggan;
 use App\Http\Controllers\Controller;
 use App\Http\Service\ActivityLogService;
@@ -27,7 +28,12 @@ class PelangganWebController extends Controller
     public function show(int $id)
     {
         $pelanggan = Pelanggan::with(['user', 'pembelianPackage.package', 'bookings.jadwalKelas.kelas', 'mutasiKredit'])->findOrFail($id);
-        return view('admin.pelanggan.show', compact('pelanggan'));
+
+        $totalCredit = (int) MutasiKredit::where('id_pelanggan', $pelanggan->id_pelanggan)->where('jenis_mutasi', 'credit')->sum('jumlah_kredit');
+        $totalDebit  = (int) MutasiKredit::where('id_pelanggan', $pelanggan->id_pelanggan)->where('jenis_mutasi', 'debit')->sum('jumlah_kredit');
+        $sisaKredit  = max(0, $totalCredit - $totalDebit);
+
+        return view('admin.pelanggan.show', compact('pelanggan', 'sisaKredit'));
     }
 
     public function destroy(int $id)

@@ -29,7 +29,6 @@
                     <td class="px-6 py-3 text-gray-500">{{ $perm->deskripsi ?? '-' }}</td>
                     <td class="px-6 py-3">
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('admin.permissions.edit', $perm->id_permission) }}" class="text-blue-600 hover:text-blue-800"><x-icon name="edit" class="w-4 h-4"/></a>
                             <form method="POST" action="{{ route('admin.permissions.destroy', $perm->id_permission) }}" onsubmit="return confirm('Hapus permission ini?')">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-800"><x-icon name="trash" class="w-4 h-4"/></button>

@@ -16,15 +16,9 @@ class RoleAdmin
             return redirect()->route('admin.login');
         }
 
-        // Check if user has admin role that is active
-        $hasAdminRole = $user->roles()
-            ->where('nama_role', 'admin')
-            ->wherePivot('is_active', true)
-            ->exists();
-
-        if (!$hasAdminRole) {
-            return redirect()->route('admin.dashboard')
-                ->with('error', 'Anda tidak memiliki akses ke admin panel. Hanya admin yang diizinkan.');
+        if (!$user->isAdminAreaUser()) {
+            return redirect()->route('home')
+                ->with('error', 'Anda tidak memiliki akses ke admin panel.');
         }
 
         return $next($request);
