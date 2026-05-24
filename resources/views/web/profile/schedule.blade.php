@@ -52,8 +52,9 @@
                         'canceled' => 'bg-red-100 text-red-600',
                         default    => 'bg-yellow-100 text-yellow-700',
                     };
-                    $canCancel = $permissions['canCreateBooking'] && $booking->status_booking === 'booked' && !$isPast;
-                    $canRefund = $canCancel && !$isToday;
+                    $classStart = $jadwal ? \Carbon\Carbon::parse($jadwal->jam_mulai) : null;
+                    $canCancel  = $permissions['canCreateBooking'] && $booking->status_booking === 'booked' && !$isPast;
+                    $canRefund  = $canCancel && $classStart && $classStart->gt(\Carbon\Carbon::now()->addHours(24));
                 @endphp
                 <div class="border border-gray-200 p-5 flex items-center justify-between gap-4 {{ $isPast ? 'opacity-60' : '' }}">
                     <div class="flex items-center gap-4">
@@ -76,7 +77,7 @@
                         <a href="{{ route('profile.booking.show', $booking->id_booking) }}" class="text-xs text-gray-500 hover:text-purple-600 font-medium transition">Detail</a>
                         @if($canCancel)
                         <form method="POST" action="{{ route('booking.cancel', $booking->id_booking) }}"
-                            onsubmit="return confirm('{{ $canRefund ? 'Cancel this booking? Your credit will be refunded.' : 'Cancel this booking? No refund — cancellation is on the class day.' }}')">
+                            @if($canRefund) onsubmit="return confirm('Cancel this booking? Your credit will be refunded.')" @endif>
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium transition">Cancel</button>

@@ -50,12 +50,18 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @foreach($jadwalList as $jadwal)
         @php
-            $isFull = $jadwal->kuota_terisi >= $jadwal->kuota_maksimal;
-            $sisaSlot = $jadwal->kuota_maksimal - $jadwal->kuota_terisi;
+            $now        = \Carbon\Carbon::now();
+            $jamMulai   = \Carbon\Carbon::parse($jadwal->jam_mulai);
+            $jamSelesai = \Carbon\Carbon::parse($jadwal->jam_selesai);
+            $isOngoing  = $now->between($jamMulai, $jamSelesai);
+            $isEnded    = $now->gt($jamSelesai);
+            $isFull     = $jadwal->kuota_terisi >= $jadwal->kuota_maksimal;
+            $sisaSlot   = $jadwal->kuota_maksimal - $jadwal->kuota_terisi;
+            $bookable   = !$isFull && !$isOngoing && !$isEnded;
         @endphp
-        <div class="border border-gray-200 bg-white p-5 {{ $isFull ? 'opacity-60' : '' }} hover:border-purple-200 hover:shadow-sm transition">
+        <div class="border border-gray-200 bg-white p-5 {{ ($isFull || $isOngoing || $isEnded) ? 'opacity-60' : '' }} hover:border-purple-200 hover:shadow-sm transition">
             <p class="text-3xl font-black text-gray-900 tracking-tight">
-                {{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('h:i A') }}
+                {{ $jamMulai->format('h:i A') }}
             </p>
             <div class="flex items-center gap-3 mt-4">
                 <div class="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xs font-bold shrink-0">
@@ -76,7 +82,11 @@
                 </span>
             </div>
             <div class="mt-4">
-                @if($isFull)
+                @if($isEnded)
+                <button disabled class="w-full py-2.5 text-sm font-semibold bg-gray-100 text-gray-400 cursor-not-allowed tracking-widest uppercase">CLASS ENDED</button>
+                @elseif($isOngoing)
+                <button disabled class="w-full py-2.5 text-sm font-semibold bg-amber-50 text-amber-500 cursor-not-allowed tracking-widest uppercase">CLASS ONGOING</button>
+                @elseif($isFull)
                 <button disabled class="w-full py-2.5 text-sm font-semibold bg-gray-100 text-gray-400 cursor-not-allowed tracking-widest uppercase">FULLY BOOKED</button>
                 @elseif(!auth()->check())
                 <button onclick="openLoginModal()" class="w-full py-2.5 text-sm font-semibold bg-purple-500 hover:bg-purple-600 text-white tracking-widest uppercase transition">BOOK NOW</button>

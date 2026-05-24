@@ -20,7 +20,7 @@ class AbsensiWebController extends Controller
     public function index()
     {
         $jadwalList = JadwalKelas::with(['kelas', 'instruktur.user'])
-            ->withCount('bookings')
+            ->withCount(['bookings' => fn ($q) => $q->where('status_booking', '!=', 'canceled')])
             ->orderBy('tanggal_kelas', 'desc')->paginate(15);
 
         return view('admin.absensi.index', compact('jadwalList'));
