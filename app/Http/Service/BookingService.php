@@ -55,7 +55,7 @@ class BookingService
                 throw new BusinessException('Anda sudah memesan kelas ini', 422);
             }
 
-            $this->credit->debit(
+            $this->credit->debitFromPackages(
                 idPelanggan: $idPelanggan,
                 jumlah: $kreditCost,
                 sumber: 'booking',
@@ -98,7 +98,7 @@ class BookingService
             $isRefundable = $classStart && $classStart->gt(Carbon::now()->addHours(24));
 
             if ($isRefundable) {
-                $this->credit->credit(
+                $this->credit->refundToPackage(
                     idPelanggan: (int) $booking->id_pelanggan,
                     jumlah: $kreditRefund,
                     sumber: 'booking_refund',

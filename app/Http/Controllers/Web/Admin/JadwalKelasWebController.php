@@ -62,17 +62,14 @@ class JadwalKelasWebController extends Controller
         $jamMulai = $data['tanggal_kelas'] . ' ' . $data['jam_mulai'];
         $jamSelesai = $data['tanggal_kelas'] . ' ' . $data['jam_selesai'];
 
-        // Prevent same instructor + same class + same date
-        $duplicate = JadwalKelas::where('id_instruktur', $data['id_instruktur'])
-            ->where('id_kelas', $data['id_kelas'])
-            ->where('tanggal_kelas', $data['tanggal_kelas'] . ' 00:00:00')
-            ->where(fn ($q) => $q->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
-                ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
-                ->orWhere(fn ($q2) => $q2->where('jam_mulai', '<=', $jamMulai)->where('jam_selesai', '>=', $jamSelesai))
-            )->exists();
+        // Prevent any class from overlapping with an existing class on the same date
+        $duplicate = JadwalKelas::where('tanggal_kelas', $data['tanggal_kelas'] . ' 00:00:00')
+            ->where('jam_mulai', '<', $jamSelesai)
+            ->where('jam_selesai', '>', $jamMulai)
+            ->exists();
 
         if ($duplicate) {
-            return back()->withErrors(['id_kelas' => 'Jadwal dengan instruktur, kelas, dan waktu yang sama sudah ada.'])->withInput();
+            return back()->withErrors(['jam_mulai' => 'Waktu tersebut bentrok dengan jadwal kelas lain yang sudah ada.'])->withInput();
         }
 
         // Combine tanggal_kelas + jam_mulai into timestamp
@@ -124,18 +121,15 @@ class JadwalKelasWebController extends Controller
         $jamMulai = $data['tanggal_kelas'] . ' ' . $data['jam_mulai'];
         $jamSelesai = $data['tanggal_kelas'] . ' ' . $data['jam_selesai'];
 
-        // Prevent same instructor + same class + same date (exclude current record)
-        $duplicate = JadwalKelas::where('id_instruktur', $data['id_instruktur'])
-            ->where('id_kelas', $data['id_kelas'])
-            ->where('tanggal_kelas', $data['tanggal_kelas'] . ' 00:00:00')
+        // Prevent any class from overlapping with an existing class on the same date (exclude current record)
+        $duplicate = JadwalKelas::where('tanggal_kelas', $data['tanggal_kelas'] . ' 00:00:00')
             ->where('id_jadwal_kelas', '!=', $id)
-            ->where(fn ($q) => $q->whereBetween('jam_mulai', [$jamMulai, $jamSelesai])
-                ->orWhereBetween('jam_selesai', [$jamMulai, $jamSelesai])
-                ->orWhere(fn ($q2) => $q2->where('jam_mulai', '<=', $jamMulai)->where('jam_selesai', '>=', $jamSelesai))
-            )->exists();
+            ->where('jam_mulai', '<', $jamSelesai)
+            ->where('jam_selesai', '>', $jamMulai)
+            ->exists();
 
         if ($duplicate) {
-            return back()->withErrors(['id_kelas' => 'Jadwal dengan instruktur, kelas, dan waktu yang sama sudah ada.'])->withInput();
+            return back()->withErrors(['jam_mulai' => 'Waktu tersebut bentrok dengan jadwal kelas lain yang sudah ada.'])->withInput();
         }
 
         // Combine tanggal_kelas + jam_mulai into timestamp

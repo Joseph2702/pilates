@@ -5,8 +5,21 @@ namespace App\Domain\Entity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Domain\Entity\MutasiKredit;
 
+/**
+ * @property int $id_pembelian_package
+ * @property int $id_pelanggan
+ * @property int $id_package
+ * @property int|null $id_promo
+ * @property string $harga_awal
+ * @property string $diskon
+ * @property string $harga_akhir
+ * @property string $status_pembelian
+ * @property int $kredit_earned
+ * @property int $sisa_kredit
+ * @property \Carbon\Carbon $tanggal_pembelian
+ * @property \Carbon\Carbon|null $tanggal_kadaluarsa
+ */
 class PembelianPackage extends Model
 {
     protected $table = 'pembelian_package';
@@ -56,27 +69,11 @@ class PembelianPackage extends Model
     }
 
     /**
-     * Calculate remaining credit for this purchase based on ledger (mutasi_kredit).
-     * - Debit (booking) reduces remaining credit
-     * - Credit (booking_refund) restores remaining credit
-     * Mutations since this purchase date are assumed to come from this purchase.
+     * Remaining credit for this package.
+     * sisa_kredit is maintained by CreditService::syncSisaKreditFIFO on every booking/refund.
      */
     public function getRemainingCredit(): int
     {
-        // Sum all debits (booking) since this purchase
-        $totalDebit = MutasiKredit::where('id_pelanggan', $this->id_pelanggan)
-            ->where('jenis_mutasi', 'debit')
-            ->where('sumber_mutasi', 'booking')
-            ->where('tanggal_mutasi', '>=', $this->tanggal_pembelian)
-            ->sum('jumlah_kredit');
-
-        // Sum all credits (booking refunds) since this purchase
-        $totalRefund = MutasiKredit::where('id_pelanggan', $this->id_pelanggan)
-            ->where('jenis_mutasi', 'credit')
-            ->where('sumber_mutasi', 'booking_refund')
-            ->where('tanggal_mutasi', '>=', $this->tanggal_pembelian)
-            ->sum('jumlah_kredit');
-
-        return max(0, $this->kredit_earned - $totalDebit + $totalRefund);
+        return max(0, min((int) $this->sisa_kredit, (int) $this->kredit_earned));
     }
 }

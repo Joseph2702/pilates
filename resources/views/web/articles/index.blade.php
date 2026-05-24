@@ -11,10 +11,10 @@
                 <h1 class="text-4xl md:text-5xl font-black text-gray-900 uppercase tracking-tight">ARTICLES</h1>
                 <p class="text-gray-400 text-sm mt-2">Exploring the intersection of biomechanics, mindfulness, and the Pilates method.</p>
             </div>
-            <div class="flex items-center gap-2 border border-gray-200 px-4 py-2.5 bg-white w-full md:w-72">
+            <form method="GET" action="{{ route('articles.index') }}" class="flex items-center gap-2 border border-gray-200 px-4 py-2.5 bg-white w-full md:w-72">
                 <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input type="text" placeholder="Search articles..." class="text-sm outline-none flex-1 text-gray-700 placeholder-gray-400">
-            </div>
+                <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Search articles..." class="text-sm outline-none flex-1 text-gray-700 placeholder-gray-400">
+            </form>
         </div>
     </div>
 </section>

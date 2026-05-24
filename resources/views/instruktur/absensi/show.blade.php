@@ -2,6 +2,13 @@
 @section('title', 'Absensi - ' . ($jadwal->kelas?->nama_kelas ?? 'Kelas'))
 
 @section('content')
+@php
+    $classOngoing = \Carbon\Carbon::now()->between(
+        \Carbon\Carbon::parse($jadwal->jam_mulai),
+        \Carbon\Carbon::parse($jadwal->jam_selesai)
+    );
+    $classNotStarted = \Carbon\Carbon::now()->lt(\Carbon\Carbon::parse($jadwal->jam_mulai));
+@endphp
 <section class="max-w-7xl mx-auto px-6 py-10">
 
     <div class="mb-8">
@@ -82,6 +89,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-3">
+                                @if($classOngoing)
                                 <div class="flex items-center gap-2">
                                     <form method="POST" action="{{ route('instruktur.absensi.store') }}" class="inline">
                                         @csrf
@@ -96,6 +104,9 @@
                                         <button type="submit" class="px-3 py-1 text-xs font-semibold {{ $b->absensi?->status_kehadiran === 'tidak_hadir' ? 'bg-red-600 text-white' : 'bg-red-50 text-red-700 hover:bg-red-100' }} transition">Tidak Hadir</button>
                                     </form>
                                 </div>
+                                @else
+                                <span class="text-xs text-gray-400">{{ $classNotStarted ? 'Kelas belum dimulai' : 'Kelas sudah selesai' }}</span>
+                                @endif
                             </td>
                         </tr>
                         @empty

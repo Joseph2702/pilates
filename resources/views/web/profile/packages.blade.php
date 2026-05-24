@@ -54,10 +54,15 @@
                         </div>
                     </div>
                     @if($isActive)
-                    @php $remainingCredit = $pembelian->getRemainingCredit(); @endphp
+                    @php
+                        $remainingCredit = $pembelian->getRemainingCredit();
+                        $barWidth = $pembelian->kredit_earned > 0
+                            ? min(100, round($remainingCredit / $pembelian->kredit_earned * 100))
+                            : 0;
+                    @endphp
                     <div class="mt-3">
                         <div class="w-full bg-purple-100 h-1.5">
-                            <div class="bg-purple-500 h-1.5 transition-all" style="width: {{ $pembelian->kredit_earned > 0 ? ($remainingCredit / $pembelian->kredit_earned * 100) : 0 }}%"></div>
+                            <div class="bg-purple-500 h-1.5 transition-all" style="width: {{ $barWidth }}%"></div>
                         </div>
                         <p class="text-xs text-purple-600 mt-1">{{ $remainingCredit }} credits remaining</p>
                     </div>

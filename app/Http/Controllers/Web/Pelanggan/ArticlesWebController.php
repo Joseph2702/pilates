@@ -4,18 +4,28 @@ namespace App\Http\Controllers\Web\Pelanggan;
 
 use App\Domain\Entity\Artikel;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class ArticlesWebController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $artikelList = Artikel::with('user')
-            ->whereNotNull('tanggal_publish')
-            ->where('tanggal_publish', '<=', now())
-            ->orderBy('tanggal_publish', 'desc')
-            ->paginate(9);
+        $search = $request->get('search');
 
-        return view('web.articles.index', compact('artikelList'));
+        $query = Artikel::with('user')
+            ->whereNotNull('tanggal_publish')
+            ->where('tanggal_publish', '<=', now());
+
+        if ($search) {
+            $query->where(fn ($q) => $q
+                ->where('judul_artikel', 'ilike', '%'.$search.'%')
+                ->orWhere('konten_artikel', 'ilike', '%'.$search.'%')
+            );
+        }
+
+        $artikelList = $query->orderBy('tanggal_publish', 'desc')->paginate(9)->withQueryString();
+
+        return view('web.articles.index', compact('artikelList', 'search'));
     }
 
     public function show(int $id)
