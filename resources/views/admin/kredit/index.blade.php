@@ -2,12 +2,26 @@
 @section('title', 'Mutasi Kredit')
 
 @section('actions')
-<form method="GET" action="{{ route('admin.kredit.index') }}" class="flex items-center gap-2">
-    <select name="jenis" onchange="this.form.submit()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none">
+<form method="GET" action="{{ route('admin.kredit.index') }}" class="flex flex-wrap items-center gap-2">
+    <select name="jenis" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none">
         <option value="">Semua Jenis</option>
         <option value="credit" {{ request('jenis') === 'credit' ? 'selected' : '' }}>Credit</option>
         <option value="debit" {{ request('jenis') === 'debit' ? 'selected' : '' }}>Debit</option>
     </select>
+    <div class="flex items-center gap-1">
+        <label class="text-xs text-gray-500 whitespace-nowrap">Dari</label>
+        <input type="date" name="date_from" value="{{ request('date_from') }}"
+            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none">
+    </div>
+    <div class="flex items-center gap-1">
+        <label class="text-xs text-gray-500 whitespace-nowrap">Sampai</label>
+        <input type="date" name="date_to" value="{{ request('date_to') }}"
+            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none">
+    </div>
+    <button type="submit" class="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-700 transition">Cari</button>
+    @if(request()->hasAny(['jenis', 'date_from', 'date_to']))
+    <a href="{{ route('admin.kredit.index') }}" class="px-4 py-2 border border-gray-300 text-sm rounded-lg hover:bg-gray-50 transition">Reset</a>
+    @endif
 </form>
 @endsection
 

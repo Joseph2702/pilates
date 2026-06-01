@@ -34,6 +34,10 @@ class ClassesWebController extends Controller
             ->where('id_kelas', $id)
             ->whereDate('tanggal_kelas', $selectedDate);
 
+        if ($selectedDate->isToday()) {
+            $query->where('jam_selesai', '>', now());
+        }
+
         if ($request->instruktur) {
             $query->where('id_instruktur', $request->instruktur);
         }

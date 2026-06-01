@@ -1,6 +1,31 @@
 @extends('layouts.admin')
 @section('title', 'Pembelian Package')
 
+@section('actions')
+<form method="GET" action="{{ route('admin.pembelian-package.index') }}" class="flex flex-wrap items-center gap-2">
+    <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none">
+        <option value="">Semua Status</option>
+        <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Paid</option>
+        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+        <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Failed</option>
+    </select>
+    <div class="flex items-center gap-1">
+        <label class="text-xs text-gray-500 whitespace-nowrap">Dari</label>
+        <input type="date" name="date_from" value="{{ request('date_from') }}"
+            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none">
+    </div>
+    <div class="flex items-center gap-1">
+        <label class="text-xs text-gray-500 whitespace-nowrap">Sampai</label>
+        <input type="date" name="date_to" value="{{ request('date_to') }}"
+            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none">
+    </div>
+    <button type="submit" class="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-700 transition">Cari</button>
+    @if(request()->hasAny(['status', 'date_from', 'date_to']))
+    <a href="{{ route('admin.pembelian-package.index') }}" class="px-4 py-2 border border-gray-300 text-sm rounded-lg hover:bg-gray-50 transition">Reset</a>
+    @endif
+</form>
+@endsection
+
 @section('content')
 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
     <div class="overflow-x-auto">

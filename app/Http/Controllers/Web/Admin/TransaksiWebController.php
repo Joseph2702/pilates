@@ -16,6 +16,14 @@ class TransaksiWebController extends Controller
             $query->where('status_internal', $status);
         }
 
+        if ($dateFrom = $request->get('date_from')) {
+            $query->whereDate('created_at', '>=', $dateFrom);
+        }
+
+        if ($dateTo = $request->get('date_to')) {
+            $query->whereDate('created_at', '<=', $dateTo);
+        }
+
         $transaksiList = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
         return view('admin.transaksi.index', compact('transaksiList'));
