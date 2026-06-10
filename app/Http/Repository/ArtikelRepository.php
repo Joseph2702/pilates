@@ -34,6 +34,7 @@ class ArtikelRepository
     public function update(Artikel $artikel, array $data): Artikel
     {
         $artikel->update($data);
+
         return $artikel->fresh();
     }
 

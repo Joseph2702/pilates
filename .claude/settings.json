@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "Bash(python3 -m json.tool)",
-      "Bash(php -l app/Http/Controllers/Web/Pelanggan/BookingWebController.php)"
+      "Bash(php -l app/Http/Controllers/Web/Pelanggan/BookingWebController.php)",
+      "Bash(docker build *)",
+      "Bash(brew list *)",
+      "Read(//Users/linkit/.jenkins/**)",
+      "Read(//Users/linkit/.jenkins/secrets/**)",
+      "Bash(curl -s http://localhost:8080/login -o /dev/null -w \"HTTP Status: %{http_code}\\\\n\")",
+      "Read(//usr/local/Cellar/jenkins-lts/2.555.2/**)",
+      "Bash(gh repo *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://github.com/Joseph2702/pilates)",
+      "Bash(curl -s https://api.github.com/repos/Joseph2702/pilates)",
+      "Bash(php -v)"
     ]
   }
 }

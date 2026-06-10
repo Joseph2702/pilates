@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class PelangganWebController extends Controller
 {
     public function __construct(protected ActivityLogService $activityLog) {}
+
     public function index(Request $request)
     {
         $query = Pelanggan::with('user');
@@ -30,8 +31,8 @@ class PelangganWebController extends Controller
         $pelanggan = Pelanggan::with(['user', 'pembelianPackage.package', 'bookings.jadwalKelas.kelas', 'mutasiKredit'])->findOrFail($id);
 
         $totalCredit = (int) MutasiKredit::where('id_pelanggan', $pelanggan->id_pelanggan)->where('jenis_mutasi', 'credit')->sum('jumlah_kredit');
-        $totalDebit  = (int) MutasiKredit::where('id_pelanggan', $pelanggan->id_pelanggan)->where('jenis_mutasi', 'debit')->sum('jumlah_kredit');
-        $sisaKredit  = max(0, $totalCredit - $totalDebit);
+        $totalDebit = (int) MutasiKredit::where('id_pelanggan', $pelanggan->id_pelanggan)->where('jenis_mutasi', 'debit')->sum('jumlah_kredit');
+        $sisaKredit = max(0, $totalCredit - $totalDebit);
 
         return view('admin.pelanggan.show', compact('pelanggan', 'sisaKredit'));
     }
@@ -41,14 +42,14 @@ class PelangganWebController extends Controller
         $pelanggan = Pelanggan::with('user')->findOrFail($id);
         $pelangganName = $pelanggan->user->nama ?? 'Unknown';
         $pelanggan->delete();
-        
+
         $this->activityLog->log(
             Auth::id(),
             'pelanggan',
             'delete',
-            'Menghapus pelanggan: ' . $pelangganName
+            'Menghapus pelanggan: '.$pelangganName
         );
-        
+
         return redirect()->route('admin.pelanggan.index')->with('success', 'Pelanggan berhasil dihapus.');
     }
 }

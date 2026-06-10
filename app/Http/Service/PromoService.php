@@ -34,14 +34,14 @@ class PromoService
     public function create(array $data): Promo
     {
         $promo = $this->repository->create($data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'promo',
             'create',
-            'Membuat promo baru: ' . $data['nama_promo']
+            'Membuat promo baru: '.$data['nama_promo']
         );
-        
+
         return $promo;
     }
 
@@ -49,14 +49,14 @@ class PromoService
     {
         $promo = $this->getOrFail($id);
         $result = $this->repository->update($promo, $data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'promo',
             'update',
-            'Mengupdate promo: ' . ($data['nama_promo'] ?? $promo->nama_promo)
+            'Mengupdate promo: '.($data['nama_promo'] ?? $promo->nama_promo)
         );
-        
+
         return $result;
     }
 
@@ -65,12 +65,12 @@ class PromoService
         $promo = $this->getOrFail($id);
         $promoName = $promo->nama_promo;
         $this->repository->delete($promo);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'promo',
             'delete',
-            'Menghapus promo: ' . $promoName
+            'Menghapus promo: '.$promoName
         );
     }
 }

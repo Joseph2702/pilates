@@ -30,6 +30,7 @@ class InstrukturRepository
     public function update(Instruktur $instruktur, array $data): Instruktur
     {
         $instruktur->update($data);
+
         return $instruktur->fresh();
     }
 

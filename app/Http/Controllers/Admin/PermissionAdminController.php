@@ -30,14 +30,14 @@ class PermissionAdminController extends Controller
         ]);
 
         $permission = $this->repository->create($data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'permission',
             'create',
-            'Membuat permission baru: ' . $data['nama_permission']
+            'Membuat permission baru: '.$data['nama_permission']
         );
-        
+
         return ApiResponse::created($permission);
     }
 
@@ -66,14 +66,14 @@ class PermissionAdminController extends Controller
         ]);
 
         $result = $this->repository->update($permission, $data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'permission',
             'update',
-            'Mengupdate permission: ' . ($data['nama_permission'] ?? $permission->nama_permission)
+            'Mengupdate permission: '.($data['nama_permission'] ?? $permission->nama_permission)
         );
-        
+
         return ApiResponse::success($result);
     }
 
@@ -86,12 +86,12 @@ class PermissionAdminController extends Controller
         }
 
         $this->repository->delete($permission);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'permission',
             'delete',
-            'Menghapus permission: ' . $permission->nama_permission
+            'Menghapus permission: '.$permission->nama_permission
         );
 
         return ApiResponse::success(null, 'Permission berhasil dihapus');

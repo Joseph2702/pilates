@@ -2,6 +2,11 @@
 
 use App\Common\Exception\BusinessException;
 use App\Common\Response\ApiResponse;
+use App\Http\Middleware\BlockAdminFromPublic;
+use App\Http\Middleware\PermissionMiddleware;
+use App\Http\Middleware\RoleAdmin;
+use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\RolePelanggan;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
@@ -19,19 +24,20 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+        $middleware->redirectGuestsTo(function (Request $request) {
             if ($request->is('admin/*') || $request->is('admin')) {
                 return route('admin.login');
             }
+
             return route('web.login');
         });
 
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
-            'permission' => \App\Http\Middleware\PermissionMiddleware::class,
-            'role.admin' => \App\Http\Middleware\RoleAdmin::class,
-            'role.pelanggan' => \App\Http\Middleware\RolePelanggan::class,
-            'block.admin' => \App\Http\Middleware\BlockAdminFromPublic::class,
+            'role' => RoleMiddleware::class,
+            'permission' => PermissionMiddleware::class,
+            'role.admin' => RoleAdmin::class,
+            'role.pelanggan' => RolePelanggan::class,
+            'block.admin' => BlockAdminFromPublic::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
@@ -55,6 +61,7 @@ return Application::configure(basePath: dirname(__DIR__))
             $redirectTo = $request->is('admin/*') || $request->is('admin')
                 ? route('admin.login')
                 : route('web.login');
+
             return redirect($redirectTo);
         });
 

@@ -25,7 +25,7 @@ class AuthService
         $user = $this->users->create($data);
 
         return [
-            'user'  => $user,
+            'user' => $user,
             'token' => $user->createToken('api')->plainTextToken,
         ];
     }
@@ -42,7 +42,7 @@ class AuthService
         }
 
         return [
-            'user'  => $user,
+            'user' => $user,
             'token' => $user->createToken('api')->plainTextToken,
         ];
     }

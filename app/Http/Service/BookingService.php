@@ -7,7 +7,6 @@ use App\Domain\Entity\Booking;
 use App\Domain\Enums\BookingStatus;
 use App\Http\Repository\BookingRepository;
 use App\Http\Repository\JadwalKelasRepository;
-use App\Http\Service\CreditService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -64,9 +63,9 @@ class BookingService
             );
 
             $booking = $this->bookings->create([
-                'id_pelanggan'    => $idPelanggan,
+                'id_pelanggan' => $idPelanggan,
                 'id_jadwal_kelas' => $idJadwalKelas,
-                'status_booking'  => BookingStatus::BOOKED->value,
+                'status_booking' => BookingStatus::BOOKED->value,
             ]);
 
             $this->jadwal->incrementKuotaTerisi($jadwal);

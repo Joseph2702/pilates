@@ -48,6 +48,7 @@ class BookingWebController extends Controller
 
         try {
             $this->bookings->book($pelanggan->id_pelanggan, (int) $request->id_jadwal_kelas);
+
             return back()->with('success', 'Booking berhasil! Kelas telah dikonfirmasi.');
         } catch (BusinessException $e) {
             return back()->with('error', $e->getMessage());

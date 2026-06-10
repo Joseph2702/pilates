@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class AbsensiInstrukturController extends Controller
 {
     public function __construct(protected AbsensiService $absensiService) {}
+
     public function index()
     {
         $instruktur = Auth::user()->instruktur;

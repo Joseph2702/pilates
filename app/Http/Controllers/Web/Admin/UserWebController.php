@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Hash;
 class UserWebController extends Controller
 {
     use PassPermissionsToView;
-    
+
     public function __construct(protected ActivityLogService $activityLog) {}
-    
+
     public function index(Request $request)
     {
         $query = User::with('roles');
@@ -35,6 +35,7 @@ class UserWebController extends Controller
     public function create()
     {
         $roles = Role::orderBy('nama_role')->get();
+
         return view('admin.users.create', compact('roles'));
     }
 
@@ -53,12 +54,12 @@ class UserWebController extends Controller
         $data['password'] = Hash::make($data['password']);
         $user = User::create(collect($data)->except('roles')->toArray());
 
-        if (!empty($data['roles'])) {
+        if (! empty($data['roles'])) {
             $user->roles()->sync($data['roles']);
 
             $pelangganRole = Role::where('nama_role', 'pelanggan')->first();
             $hasPelangganRole = $pelangganRole && in_array($pelangganRole->id_role, array_map('intval', $data['roles']));
-            if ($hasPelangganRole && !Pelanggan::where('id_user', $user->id_user)->exists()) {
+            if ($hasPelangganRole && ! Pelanggan::where('id_user', $user->id_user)->exists()) {
                 Pelanggan::create(['id_user' => $user->id_user, 'tanggal_daftar' => now()]);
             }
         }
@@ -67,7 +68,7 @@ class UserWebController extends Controller
             Auth::id(),
             'user',
             'create',
-            'Membuat user baru: ' . $data['nama']
+            'Membuat user baru: '.$data['nama']
         );
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dibuat.');
@@ -77,6 +78,7 @@ class UserWebController extends Controller
     {
         $user = User::with('roles')->findOrFail($id);
         $roles = Role::orderBy('nama_role')->get();
+
         return view('admin.users.edit', compact('user', 'roles'));
     }
 
@@ -94,7 +96,7 @@ class UserWebController extends Controller
             'roles' => 'nullable|array',
         ]);
 
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);
@@ -107,7 +109,7 @@ class UserWebController extends Controller
 
             $pelangganRole = Role::where('nama_role', 'pelanggan')->first();
             $hasPelangganRole = $pelangganRole && in_array($pelangganRole->id_role, array_map('intval', $data['roles']));
-            if ($hasPelangganRole && !Pelanggan::where('id_user', $user->id_user)->exists()) {
+            if ($hasPelangganRole && ! Pelanggan::where('id_user', $user->id_user)->exists()) {
                 Pelanggan::create(['id_user' => $user->id_user, 'tanggal_daftar' => now()]);
             }
         }
@@ -116,7 +118,7 @@ class UserWebController extends Controller
             Auth::id(),
             'user',
             'update',
-            'Mengupdate user: ' . $data['nama']
+            'Mengupdate user: '.$data['nama']
         );
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil diupdate.');
@@ -127,14 +129,14 @@ class UserWebController extends Controller
         $user = User::findOrFail($id);
         $userName = $user->nama;
         $user->delete();
-        
+
         $this->activityLog->log(
             Auth::id(),
             'user',
             'delete',
-            'Menghapus user: ' . $userName
+            'Menghapus user: '.$userName
         );
-        
+
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
     }
 }

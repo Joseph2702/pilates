@@ -39,8 +39,8 @@ class ProfileInstrukturController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'nama'     => 'required|string|max:100',
-            'no_hp'    => 'nullable|string|max:20|regex:/^[0-9]*$/',
+            'nama' => 'required|string|max:100',
+            'no_hp' => 'nullable|string|max:20|regex:/^[0-9]*$/',
             'jenis_kelamin' => 'nullable|in:laki-laki,perempuan',
             'tempat_lahir' => 'nullable|string|max:100',
             'tanggal_lahir' => 'nullable|date',
@@ -65,12 +65,12 @@ class ProfileInstrukturController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'password'         => 'required|min:8|confirmed',
+            'password' => 'required|min:8|confirmed',
         ]);
 
         $user = Auth::user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini salah.']);
         }
 

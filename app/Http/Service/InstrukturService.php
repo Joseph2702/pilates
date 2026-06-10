@@ -39,14 +39,14 @@ class InstrukturService
         }
 
         $instruktur = $this->repository->create($data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'instruktur',
             'create',
             'Menambahkan instruktur baru'
         );
-        
+
         return $instruktur;
     }
 
@@ -54,14 +54,14 @@ class InstrukturService
     {
         $instruktur = $this->getOrFail($id);
         $result = $this->repository->update($instruktur, $data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'instruktur',
             'update',
             'Mengupdate data instruktur'
         );
-        
+
         return $result;
     }
 
@@ -69,7 +69,7 @@ class InstrukturService
     {
         $instruktur = $this->getOrFail($id);
         $this->repository->delete($instruktur);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'instruktur',

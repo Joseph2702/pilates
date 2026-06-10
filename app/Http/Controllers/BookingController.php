@@ -14,9 +14,9 @@ class BookingController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'id_pelanggan'    => ['required', 'integer', 'exists:pelanggan,id_pelanggan'],
+            'id_pelanggan' => ['required', 'integer', 'exists:pelanggan,id_pelanggan'],
             'id_jadwal_kelas' => ['required', 'integer', 'exists:jadwal_kelas,id_jadwal_kelas'],
-            'kredit_cost'     => ['nullable', 'integer', 'min:1'],
+            'kredit_cost' => ['nullable', 'integer', 'min:1'],
         ]);
 
         $booking = $this->bookings->book(

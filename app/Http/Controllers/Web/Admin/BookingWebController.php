@@ -16,7 +16,7 @@ class BookingWebController extends Controller
         if ($status === 'done') {
             // done = booked but class date has passed
             $query->where('status_booking', 'booked')
-                  ->whereHas('jadwalKelas', fn ($q) => $q->where('tanggal_kelas', '<', now()->startOfDay()));
+                ->whereHas('jadwalKelas', fn ($q) => $q->where('tanggal_kelas', '<', now()->startOfDay()));
         } elseif ($status) {
             $query->where('status_booking', $status);
         }
@@ -29,6 +29,7 @@ class BookingWebController extends Controller
     public function show(int $id)
     {
         $booking = Booking::with(['pelanggan.user', 'jadwalKelas.kelas', 'jadwalKelas.instruktur.user', 'absensi'])->findOrFail($id);
+
         return view('admin.bookings.show', compact('booking'));
     }
 }

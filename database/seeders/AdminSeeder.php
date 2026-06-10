@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Domain\Entity\User;
-use App\Domain\Entity\Role;
 use App\Domain\Entity\Permission;
+use App\Domain\Entity\Role;
+use App\Domain\Entity\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 

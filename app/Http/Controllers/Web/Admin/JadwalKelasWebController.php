@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Auth;
 class JadwalKelasWebController extends Controller
 {
     use PassPermissionsToView;
-    
+
     public function __construct(protected ActivityLogService $activityLog) {}
-    
+
     public function index(Request $request)
     {
         $filter = $request->get('filter', 'all');
@@ -33,6 +33,7 @@ class JadwalKelasWebController extends Controller
         $jadwalList = $query->orderBy('tanggal_kelas', $filter === 'done' ? 'desc' : 'asc')->paginate(15)->withQueryString();
 
         $permissions = $this->buildPermissions('jadwal_kelas');
+
         return view('admin.jadwal-kelas.index', compact('jadwalList', 'permissions', 'filter'));
     }
 
@@ -40,6 +41,7 @@ class JadwalKelasWebController extends Controller
     {
         $kelasList = Kelas::orderBy('nama_kelas')->get();
         $instrukturList = Instruktur::with('user')->orderBy('id_instruktur')->get();
+
         return view('admin.jadwal-kelas.create', compact('kelasList', 'instrukturList'));
     }
 
@@ -59,11 +61,11 @@ class JadwalKelasWebController extends Controller
             return back()->withErrors(['jam_selesai' => 'Jam selesai harus lebih besar dari jam mulai'])->withInput();
         }
 
-        $jamMulai = $data['tanggal_kelas'] . ' ' . $data['jam_mulai'];
-        $jamSelesai = $data['tanggal_kelas'] . ' ' . $data['jam_selesai'];
+        $jamMulai = $data['tanggal_kelas'].' '.$data['jam_mulai'];
+        $jamSelesai = $data['tanggal_kelas'].' '.$data['jam_selesai'];
 
         // Prevent any class from overlapping with an existing class on the same date
-        $duplicate = JadwalKelas::where('tanggal_kelas', $data['tanggal_kelas'] . ' 00:00:00')
+        $duplicate = JadwalKelas::where('tanggal_kelas', $data['tanggal_kelas'].' 00:00:00')
             ->where('jam_mulai', '<', $jamSelesai)
             ->where('jam_selesai', '>', $jamMulai)
             ->exists();
@@ -76,17 +78,17 @@ class JadwalKelasWebController extends Controller
         $data['jam_mulai'] = $jamMulai;
         $data['jam_selesai'] = $jamSelesai;
         // tanggal_kelas stays as date only
-        $data['tanggal_kelas'] = $data['tanggal_kelas'] . ' 00:00:00';
+        $data['tanggal_kelas'] = $data['tanggal_kelas'].' 00:00:00';
 
         $data['kuota_terisi'] = 0;
         $jadwal = JadwalKelas::create($data);
-        
+
         $kelas = Kelas::findOrFail($data['id_kelas']);
         $this->activityLog->log(
             Auth::id(),
             'jadwal_kelas',
             'create',
-            'Membuat jadwal kelas baru untuk: ' . $kelas->nama_kelas
+            'Membuat jadwal kelas baru untuk: '.$kelas->nama_kelas
         );
 
         return redirect()->route('admin.jadwal-kelas.index')->with('success', 'Jadwal kelas berhasil dibuat.');
@@ -97,6 +99,7 @@ class JadwalKelasWebController extends Controller
         $jadwal = JadwalKelas::findOrFail($id);
         $kelasList = Kelas::orderBy('nama_kelas')->get();
         $instrukturList = Instruktur::with('user')->orderBy('id_instruktur')->get();
+
         return view('admin.jadwal-kelas.edit', compact('jadwal', 'kelasList', 'instrukturList'));
     }
 
@@ -118,11 +121,11 @@ class JadwalKelasWebController extends Controller
             return back()->withErrors(['jam_selesai' => 'Jam selesai harus lebih besar dari jam mulai'])->withInput();
         }
 
-        $jamMulai = $data['tanggal_kelas'] . ' ' . $data['jam_mulai'];
-        $jamSelesai = $data['tanggal_kelas'] . ' ' . $data['jam_selesai'];
+        $jamMulai = $data['tanggal_kelas'].' '.$data['jam_mulai'];
+        $jamSelesai = $data['tanggal_kelas'].' '.$data['jam_selesai'];
 
         // Prevent any class from overlapping with an existing class on the same date (exclude current record)
-        $duplicate = JadwalKelas::where('tanggal_kelas', $data['tanggal_kelas'] . ' 00:00:00')
+        $duplicate = JadwalKelas::where('tanggal_kelas', $data['tanggal_kelas'].' 00:00:00')
             ->where('id_jadwal_kelas', '!=', $id)
             ->where('jam_mulai', '<', $jamSelesai)
             ->where('jam_selesai', '>', $jamMulai)
@@ -136,16 +139,16 @@ class JadwalKelasWebController extends Controller
         $data['jam_mulai'] = $jamMulai;
         $data['jam_selesai'] = $jamSelesai;
         // tanggal_kelas stays as date only
-        $data['tanggal_kelas'] = $data['tanggal_kelas'] . ' 00:00:00';
+        $data['tanggal_kelas'] = $data['tanggal_kelas'].' 00:00:00';
 
         $jadwal->update($data);
-        
+
         $kelas = Kelas::findOrFail($data['id_kelas']);
         $this->activityLog->log(
             Auth::id(),
             'jadwal_kelas',
             'update',
-            'Mengupdate jadwal kelas untuk: ' . $kelas->nama_kelas
+            'Mengupdate jadwal kelas untuk: '.$kelas->nama_kelas
         );
 
         return redirect()->route('admin.jadwal-kelas.index')->with('success', 'Jadwal kelas berhasil diupdate.');
@@ -156,14 +159,14 @@ class JadwalKelasWebController extends Controller
         $jadwal = JadwalKelas::with('kelas')->findOrFail($id);
         $kelasName = $jadwal->kelas->nama_kelas;
         $jadwal->delete();
-        
+
         $this->activityLog->log(
             Auth::id(),
             'jadwal_kelas',
             'delete',
-            'Menghapus jadwal kelas untuk: ' . $kelasName
+            'Menghapus jadwal kelas untuk: '.$kelasName
         );
-        
+
         return redirect()->route('admin.jadwal-kelas.index')->with('success', 'Jadwal kelas berhasil dihapus.');
     }
 }

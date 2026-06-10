@@ -13,13 +13,14 @@ use Illuminate\Support\Facades\Storage;
 class ArtikelWebController extends Controller
 {
     use PassPermissionsToView;
-    
+
     public function __construct(protected ActivityLogService $activityLog) {}
-    
+
     public function index()
     {
         $artikels = Artikel::with('user')->orderBy('created_at', 'desc')->paginate(15);
         $permissions = $this->buildPermissions('artikel');
+
         return view('admin.artikel.index', compact('artikels', 'permissions'));
     }
 
@@ -31,9 +32,9 @@ class ArtikelWebController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'judul_artikel'  => 'required|string|max:255',
+            'judul_artikel' => 'required|string|max:255',
             'konten_artikel' => 'required|string',
-            'gambar_file'    => 'nullable|image|max:2048',
+            'gambar_file' => 'nullable|image|max:2048',
             'gambar_artikel' => 'nullable|string',
             'tanggal_publish' => 'nullable|date',
         ]);
@@ -47,18 +48,18 @@ class ArtikelWebController extends Controller
         }
 
         Artikel::create([
-            'id_user'        => auth()->user()->id_user,
-            'judul_artikel'  => $request->judul_artikel,
+            'id_user' => auth()->user()->id_user,
+            'judul_artikel' => $request->judul_artikel,
             'konten_artikel' => $request->konten_artikel,
             'gambar_artikel' => $gambar,
             'tanggal_publish' => $request->tanggal_publish,
         ]);
-        
+
         $this->activityLog->log(
             Auth::id(),
             'artikel',
             'create',
-            'Membuat artikel baru: ' . $request->judul_artikel
+            'Membuat artikel baru: '.$request->judul_artikel
         );
 
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil dibuat.');
@@ -67,6 +68,7 @@ class ArtikelWebController extends Controller
     public function edit(int $id)
     {
         $artikel = Artikel::findOrFail($id);
+
         return view('admin.artikel.edit', compact('artikel'));
     }
 
@@ -75,9 +77,9 @@ class ArtikelWebController extends Controller
         $artikel = Artikel::findOrFail($id);
 
         $request->validate([
-            'judul_artikel'  => 'required|string|max:255',
+            'judul_artikel' => 'required|string|max:255',
             'konten_artikel' => 'required|string',
-            'gambar_file'    => 'nullable|image|max:2048',
+            'gambar_file' => 'nullable|image|max:2048',
             'gambar_artikel' => 'nullable|string',
             'tanggal_publish' => 'nullable|date',
         ]);
@@ -93,17 +95,17 @@ class ArtikelWebController extends Controller
         }
 
         $artikel->update([
-            'judul_artikel'  => $request->judul_artikel,
+            'judul_artikel' => $request->judul_artikel,
             'konten_artikel' => $request->konten_artikel,
             'gambar_artikel' => $gambar,
             'tanggal_publish' => $request->tanggal_publish,
         ]);
-        
+
         $this->activityLog->log(
             Auth::id(),
             'artikel',
             'update',
-            'Mengupdate artikel: ' . $request->judul_artikel
+            'Mengupdate artikel: '.$request->judul_artikel
         );
 
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil diupdate.');
@@ -114,14 +116,14 @@ class ArtikelWebController extends Controller
         $artikel = Artikel::findOrFail($id);
         $judul = $artikel->judul_artikel;
         $artikel->delete();
-        
+
         $this->activityLog->log(
             Auth::id(),
             'artikel',
             'delete',
-            'Menghapus artikel: ' . $judul
+            'Menghapus artikel: '.$judul
         );
-        
+
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil dihapus.');
     }
 }

@@ -30,14 +30,14 @@ class JadwalKelasService
     {
         $data['kuota_terisi'] = 0;
         $jadwal = JadwalKelas::create($data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'jadwal_kelas',
             'create',
             'Membuat jadwal kelas baru'
         );
-        
+
         return $jadwal;
     }
 
@@ -45,14 +45,14 @@ class JadwalKelasService
     {
         $jadwal = $this->getOrFail($id);
         $jadwal->update($data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'jadwal_kelas',
             'update',
             'Mengupdate jadwal kelas'
         );
-        
+
         return $jadwal->fresh();
     }
 
@@ -60,7 +60,7 @@ class JadwalKelasService
     {
         $jadwal = $this->getOrFail($id);
         $jadwal->delete();
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'jadwal_kelas',

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Entity;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,13 +18,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $status_pembelian
  * @property int $kredit_earned
  * @property int $sisa_kredit
- * @property \Carbon\Carbon $tanggal_pembelian
- * @property \Carbon\Carbon|null $tanggal_kadaluarsa
+ * @property Carbon $tanggal_pembelian
+ * @property Carbon|null $tanggal_kadaluarsa
  */
 class PembelianPackage extends Model
 {
     protected $table = 'pembelian_package';
+
     protected $primaryKey = 'id_pembelian_package';
+
     public $timestamps = false;
 
     protected $fillable = [

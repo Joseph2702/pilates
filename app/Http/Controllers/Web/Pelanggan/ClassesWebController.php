@@ -14,6 +14,7 @@ class ClassesWebController extends Controller
     public function index()
     {
         $kelasList = Kelas::all();
+
         return view('web.classes.index', compact('kelasList'));
     }
 

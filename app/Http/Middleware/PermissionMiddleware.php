@@ -26,7 +26,7 @@ class PermissionMiddleware
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Anda tidak memiliki akses ke halaman ini.'
+                'message' => 'Anda tidak memiliki akses ke halaman ini.',
             ], 403);
         }
 

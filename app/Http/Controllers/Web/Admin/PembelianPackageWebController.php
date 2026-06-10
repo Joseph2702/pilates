@@ -32,6 +32,7 @@ class PembelianPackageWebController extends Controller
     public function show(int $id)
     {
         $pembelian = PembelianPackage::with(['pelanggan.user', 'package', 'promo', 'transaksi'])->findOrFail($id);
+
         return view('admin.pembelian-package.show', compact('pembelian'));
     }
 }

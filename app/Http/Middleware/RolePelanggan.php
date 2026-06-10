@@ -12,7 +12,7 @@ class RolePelanggan
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('web.login');
         }
 
@@ -27,7 +27,7 @@ class RolePelanggan
                 ->with('info', 'Silahkan akses admin panel.');
         }
 
-        if (!$hasPelangganRole) {
+        if (! $hasPelangganRole) {
             return redirect()->route('home')
                 ->with('error', 'Anda tidak memiliki akses ke halaman ini. Hanya pelanggan yang diizinkan.');
         }

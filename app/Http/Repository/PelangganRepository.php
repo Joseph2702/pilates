@@ -30,6 +30,7 @@ class PelangganRepository
     public function update(Pelanggan $pelanggan, array $data): Pelanggan
     {
         $pelanggan->update($data);
+
         return $pelanggan->fresh();
     }
 

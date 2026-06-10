@@ -7,7 +7,6 @@ use App\Domain\Entity\Package;
 use App\Domain\Entity\Pelanggan;
 use App\Domain\Entity\PembelianPackage;
 use App\Domain\Entity\Promo;
-
 use App\Http\Controllers\Controller;
 use App\Http\Service\PaymentService;
 use Illuminate\Http\Request;
@@ -82,8 +81,8 @@ class PackagesWebController extends Controller
 
             return view('web.packages.payment', [
                 'snapToken' => $result['snap_token'],
-                'orderId'   => $result['order_id'],
-                'package'   => $package,
+                'orderId' => $result['order_id'],
+                'package' => $package,
             ]);
         } catch (BusinessException $e) {
             return back()->with('error', $e->getMessage());
@@ -122,12 +121,11 @@ class PackagesWebController extends Controller
 
         return response()->json([
             'success' => true,
-            'promo'   => [
-                'kode_promo'       => $promo->kode_promo,
-                'nama_promo'       => $promo->nama_promo,
-                'persenan_diskon'  => $promo->persenan_diskon,
+            'promo' => [
+                'kode_promo' => $promo->kode_promo,
+                'nama_promo' => $promo->nama_promo,
+                'persenan_diskon' => $promo->persenan_diskon,
             ],
         ]);
     }
-
 }

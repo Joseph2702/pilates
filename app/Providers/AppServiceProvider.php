@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(MidtransConfig::class, function ($app) {
-            return new MidtransConfig();
+            return new MidtransConfig;
         });
 
         $this->app->bind(MidtransClient::class, function ($app) {

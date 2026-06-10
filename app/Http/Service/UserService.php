@@ -34,14 +34,14 @@ class UserService
     {
         $user = $this->getOrFail($id);
         $result = $this->userRepo->update($user, $data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'user',
             'update',
-            'Mengupdate user: ' . ($data['nama'] ?? $user->nama)
+            'Mengupdate user: '.($data['nama'] ?? $user->nama)
         );
-        
+
         return $result;
     }
 
@@ -49,14 +49,14 @@ class UserService
     {
         $user = $this->getOrFail($idUser);
         $user->roles()->sync($roleIds);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'user',
             'sync_roles',
-            'Mengubah role untuk user: ' . $user->nama
+            'Mengubah role untuk user: '.$user->nama
         );
-        
+
         return $user->fresh('roles');
     }
 
@@ -64,14 +64,14 @@ class UserService
     {
         $user = $this->getOrFail($id);
         $result = $this->userRepo->update($user, ['status' => 'inactive']);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'user',
             'deactivate',
-            'Menonaktifkan user: ' . $user->nama
+            'Menonaktifkan user: '.$user->nama
         );
-        
+
         return $result;
     }
 }

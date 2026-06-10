@@ -10,7 +10,7 @@ class PaymentLogRepository
     public function record(string $orderId, array $rawResponse): PaymentLog
     {
         return PaymentLog::create([
-            'order_id'     => $orderId,
+            'order_id' => $orderId,
             'raw_response' => $rawResponse,
         ]);
     }

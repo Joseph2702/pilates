@@ -32,6 +32,7 @@ class TransaksiWebController extends Controller
     public function show(int $id)
     {
         $transaksi = Transaksi::with('pembelianPackage.pelanggan.user', 'pembelianPackage.package')->findOrFail($id);
+
         return view('admin.transaksi.show', compact('transaksi'));
     }
 }

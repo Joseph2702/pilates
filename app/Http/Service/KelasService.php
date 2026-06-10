@@ -29,14 +29,14 @@ class KelasService
     public function create(array $data): Kelas
     {
         $kelas = $this->repository->create($data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'kelas',
             'create',
-            'Membuat kelas baru: ' . $data['nama_kelas']
+            'Membuat kelas baru: '.$data['nama_kelas']
         );
-        
+
         return $kelas;
     }
 
@@ -44,14 +44,14 @@ class KelasService
     {
         $kelas = $this->getOrFail($id);
         $result = $this->repository->update($kelas, $data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'kelas',
             'update',
-            'Mengupdate kelas: ' . ($data['nama_kelas'] ?? $kelas->nama_kelas)
+            'Mengupdate kelas: '.($data['nama_kelas'] ?? $kelas->nama_kelas)
         );
-        
+
         return $result;
     }
 
@@ -60,12 +60,12 @@ class KelasService
         $kelas = $this->getOrFail($id);
         $kelasName = $kelas->nama_kelas;
         $this->repository->delete($kelas);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'kelas',
             'delete',
-            'Menghapus kelas: ' . $kelasName
+            'Menghapus kelas: '.$kelasName
         );
     }
 }

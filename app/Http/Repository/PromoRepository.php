@@ -42,6 +42,7 @@ class PromoRepository
     public function update(Promo $promo, array $data): Promo
     {
         $promo->update($data);
+
         return $promo->fresh();
     }
 

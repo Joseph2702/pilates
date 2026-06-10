@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Pelanggan extends Model
 {
     protected $table = 'pelanggan';
+
     protected $primaryKey = 'id_pelanggan';
+
     public $timestamps = false;
 
     protected $fillable = ['id_user', 'tanggal_daftar'];

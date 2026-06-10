@@ -34,9 +34,9 @@ class JadwalKelasAdminController extends Controller
         }
 
         // Combine tanggal_kelas + jam_mulai into timestamp
-        $data['jam_mulai'] = $data['tanggal_kelas'] . ' ' . $data['jam_mulai'];
-        $data['jam_selesai'] = $data['tanggal_kelas'] . ' ' . $data['jam_selesai'];
-        $data['tanggal_kelas'] = $data['tanggal_kelas'] . ' 00:00:00';
+        $data['jam_mulai'] = $data['tanggal_kelas'].' '.$data['jam_mulai'];
+        $data['jam_selesai'] = $data['tanggal_kelas'].' '.$data['jam_selesai'];
+        $data['tanggal_kelas'] = $data['tanggal_kelas'].' 00:00:00';
 
         return ApiResponse::created($this->service->create($data));
     }
@@ -65,12 +65,12 @@ class JadwalKelasAdminController extends Controller
         // Combine tanggal_kelas + jam_mulai into timestamp if date/time fields present
         if (isset($data['tanggal_kelas'])) {
             if (isset($data['jam_mulai'])) {
-                $data['jam_mulai'] = $data['tanggal_kelas'] . ' ' . $data['jam_mulai'];
+                $data['jam_mulai'] = $data['tanggal_kelas'].' '.$data['jam_mulai'];
             }
             if (isset($data['jam_selesai'])) {
-                $data['jam_selesai'] = $data['tanggal_kelas'] . ' ' . $data['jam_selesai'];
+                $data['jam_selesai'] = $data['tanggal_kelas'].' '.$data['jam_selesai'];
             }
-            $data['tanggal_kelas'] = $data['tanggal_kelas'] . ' 00:00:00';
+            $data['tanggal_kelas'] = $data['tanggal_kelas'].' 00:00:00';
         }
 
         return ApiResponse::success($this->service->update($id, $data));

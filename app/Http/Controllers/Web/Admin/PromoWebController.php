@@ -12,13 +12,14 @@ use Illuminate\Support\Facades\Auth;
 class PromoWebController extends Controller
 {
     use PassPermissionsToView;
-    
+
     public function __construct(protected ActivityLogService $activityLog) {}
-    
+
     public function index()
     {
         $promos = Promo::orderBy('created_at', 'desc')->paginate(15);
         $permissions = $this->buildPermissions('promo');
+
         return view('admin.promo.index', compact('promos', 'permissions'));
     }
 
@@ -39,12 +40,12 @@ class PromoWebController extends Controller
         ]);
 
         Promo::create($data);
-        
+
         $this->activityLog->log(
             Auth::id(),
             'promo',
             'create',
-            'Membuat promo baru: ' . $data['nama_promo']
+            'Membuat promo baru: '.$data['nama_promo']
         );
 
         return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil dibuat.');
@@ -53,6 +54,7 @@ class PromoWebController extends Controller
     public function edit(int $id)
     {
         $promo = Promo::findOrFail($id);
+
         return view('admin.promo.edit', compact('promo'));
     }
 
@@ -70,12 +72,12 @@ class PromoWebController extends Controller
         ]);
 
         $promo->update($data);
-        
+
         $this->activityLog->log(
             Auth::id(),
             'promo',
             'update',
-            'Mengupdate promo: ' . $data['nama_promo']
+            'Mengupdate promo: '.$data['nama_promo']
         );
 
         return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil diupdate.');
@@ -86,14 +88,14 @@ class PromoWebController extends Controller
         $promo = Promo::findOrFail($id);
         $promoName = $promo->nama_promo;
         $promo->delete();
-        
+
         $this->activityLog->log(
             Auth::id(),
             'promo',
             'delete',
-            'Menghapus promo: ' . $promoName
+            'Menghapus promo: '.$promoName
         );
-        
+
         return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil dihapus.');
     }
 }

@@ -13,19 +13,21 @@ use Illuminate\Support\Facades\Auth;
 class RoleWebController extends Controller
 {
     use PassPermissionsToView;
-    
+
     public function __construct(protected ActivityLogService $activityLog) {}
-    
+
     public function index()
     {
         $roles = Role::with('permissions')->orderBy('id_role')->get();
         $permissions = $this->buildPermissions('roles');
+
         return view('admin.roles.index', compact('roles', 'permissions'));
     }
 
     public function create()
     {
         $permissions = Permission::orderBy('nama_permission')->get();
+
         return view('admin.roles.create', compact('permissions'));
     }
 
@@ -39,15 +41,15 @@ class RoleWebController extends Controller
 
         $role = Role::create(['nama_role' => $data['nama_role'], 'is_active' => $data['is_active'] ?? true]);
 
-        if (!empty($data['permissions'])) {
+        if (! empty($data['permissions'])) {
             $role->permissions()->sync($data['permissions']);
         }
-        
+
         $this->activityLog->log(
             Auth::id(),
             'role',
             'create',
-            'Membuat role baru: ' . $data['nama_role']
+            'Membuat role baru: '.$data['nama_role']
         );
 
         return redirect()->route('admin.roles.index')->with('success', 'Role berhasil dibuat.');
@@ -57,10 +59,10 @@ class RoleWebController extends Controller
     {
         $role = Role::with('permissions')->findOrFail($id);
         $permissions = Permission::orderBy('nama_permission')->get();
-        
+
         // Ensure selectedPermissions is properly set
         $selectedPermissions = $role->permissions->pluck('id_permission')->toArray();
-        
+
         return view('admin.roles.edit', compact('role', 'permissions', 'selectedPermissions'));
     }
 
@@ -83,12 +85,12 @@ class RoleWebController extends Controller
             $role->permissions()->sync([]);
             $role->users()->get()->each(fn ($user) => $user->clearPermissionCache());
         }
-        
+
         $this->activityLog->log(
             Auth::id(),
             'role',
             'update',
-            'Mengupdate role: ' . $data['nama_role']
+            'Mengupdate role: '.$data['nama_role']
         );
 
         return redirect()->route('admin.roles.index')->with('success', 'Role berhasil diupdate. Perubahan akan langsung berlaku untuk user dengan role ini.');
@@ -99,14 +101,14 @@ class RoleWebController extends Controller
         $role = Role::findOrFail($id);
         $roleName = $role->nama_role;
         $role->delete();
-        
+
         $this->activityLog->log(
             Auth::id(),
             'role',
             'delete',
-            'Menghapus role: ' . $roleName
+            'Menghapus role: '.$roleName
         );
-        
+
         return redirect()->route('admin.roles.index')->with('success', 'Role berhasil dihapus.');
     }
 }

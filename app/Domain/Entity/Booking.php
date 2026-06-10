@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Booking extends Model
 {
     protected $table = 'booking';
+
     protected $primaryKey = 'id_booking';
 
     protected $fillable = [

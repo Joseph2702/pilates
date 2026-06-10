@@ -37,6 +37,7 @@ class AuthInstrukturController extends Controller
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
+
                 return back()->withErrors(['email' => 'Akun ini bukan akun instruktur.'])->onlyInput('email');
             }
 

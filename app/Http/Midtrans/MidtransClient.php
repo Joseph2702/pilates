@@ -39,6 +39,6 @@ class MidtransClient
      */
     public function parseNotification(): Notification
     {
-        return new Notification();
+        return new Notification;
     }
 }

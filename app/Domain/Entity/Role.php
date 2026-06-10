@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Role extends Model
 {
     protected $table = 'roles';
+
     protected $primaryKey = 'id_role';
+
     public $timestamps = false;
 
     protected $fillable = ['nama_role', 'is_active'];
@@ -40,4 +42,5 @@ class Role extends Model
         $this->users()
             ->get()
             ->each(fn ($user) => $user->clearPermissionCache());
-    }}
+    }
+}

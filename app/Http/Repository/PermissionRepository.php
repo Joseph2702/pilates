@@ -25,6 +25,7 @@ class PermissionRepository
     public function update(Permission $permission, array $data): Permission
     {
         $permission->update($data);
+
         return $permission->fresh();
     }
 

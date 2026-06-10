@@ -18,6 +18,10 @@ use App\Http\Controllers\Web\Admin\PromoWebController;
 use App\Http\Controllers\Web\Admin\RoleWebController;
 use App\Http\Controllers\Web\Admin\TransaksiWebController;
 use App\Http\Controllers\Web\Admin\UserWebController;
+use App\Http\Controllers\Web\Instruktur\AbsensiInstrukturController;
+use App\Http\Controllers\Web\Instruktur\AuthInstrukturController;
+use App\Http\Controllers\Web\Instruktur\JadwalInstrukturController;
+use App\Http\Controllers\Web\Instruktur\ProfileInstrukturController;
 use App\Http\Controllers\Web\Pelanggan\ArticlesWebController;
 use App\Http\Controllers\Web\Pelanggan\AuthWebPelangganController;
 use App\Http\Controllers\Web\Pelanggan\BookingWebController as PelangganBookingController;
@@ -26,10 +30,6 @@ use App\Http\Controllers\Web\Pelanggan\ContactController;
 use App\Http\Controllers\Web\Pelanggan\HomeController;
 use App\Http\Controllers\Web\Pelanggan\PackagesWebController;
 use App\Http\Controllers\Web\Pelanggan\ProfileWebController;
-use App\Http\Controllers\Web\Instruktur\AuthInstrukturController;
-use App\Http\Controllers\Web\Instruktur\JadwalInstrukturController;
-use App\Http\Controllers\Web\Instruktur\AbsensiInstrukturController;
-use App\Http\Controllers\Web\Instruktur\ProfileInstrukturController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to web homepage

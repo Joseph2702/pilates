@@ -34,14 +34,14 @@ class RoleService
         }
 
         $role = $this->repository->create($data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'role',
             'create',
-            'Membuat role baru: ' . $data['nama_role']
+            'Membuat role baru: '.$data['nama_role']
         );
-        
+
         return $role;
     }
 
@@ -49,14 +49,14 @@ class RoleService
     {
         $role = $this->getOrFail($id);
         $result = $this->repository->update($role, $data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'role',
             'update',
-            'Mengupdate role: ' . ($data['nama_role'] ?? $role->nama_role)
+            'Mengupdate role: '.($data['nama_role'] ?? $role->nama_role)
         );
-        
+
         return $result;
     }
 
@@ -65,12 +65,12 @@ class RoleService
         $role = $this->getOrFail($id);
         $roleName = $role->nama_role;
         $this->repository->delete($role);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'role',
             'delete',
-            'Menghapus role: ' . $roleName
+            'Menghapus role: '.$roleName
         );
     }
 
@@ -78,6 +78,7 @@ class RoleService
     {
         $role = $this->getOrFail($idRole);
         $role->permissions()->sync($permissionIds);
+
         return $role->fresh('permissions');
     }
 }

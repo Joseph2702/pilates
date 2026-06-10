@@ -25,16 +25,17 @@ class WebhookController extends Controller
         }
 
         // Verify Midtrans signature
-        $orderId     = $payload['order_id'] ?? '';
-        $statusCode  = $payload['status_code'] ?? '';
+        $orderId = $payload['order_id'] ?? '';
+        $statusCode = $payload['status_code'] ?? '';
         $grossAmount = $payload['gross_amount'] ?? '';
-        $serverKey   = config('midtrans.server_key');
+        $serverKey = config('midtrans.server_key');
 
-        $expectedSignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+        $expectedSignature = hash('sha512', $orderId.$statusCode.$grossAmount.$serverKey);
         $incomingSignature = $payload['signature_key'] ?? '';
 
         if ($incomingSignature !== $expectedSignature) {
             Log::warning('Midtrans webhook: invalid signature', ['order_id' => $orderId]);
+
             return ApiResponse::error('Invalid signature', 403);
         }
 
@@ -42,9 +43,10 @@ class WebhookController extends Controller
             $this->payments->handleNotification($payload);
         } catch (BusinessException $e) {
             // Known cases (test order_id, already processed, etc.) — return 200 so Midtrans does not retry
-            Log::warning('Midtrans webhook skipped: ' . $e->getMessage(), ['order_id' => $orderId]);
+            Log::warning('Midtrans webhook skipped: '.$e->getMessage(), ['order_id' => $orderId]);
         } catch (\Throwable $e) {
-            Log::error('Midtrans webhook error: ' . $e->getMessage(), ['payload' => $payload]);
+            Log::error('Midtrans webhook error: '.$e->getMessage(), ['payload' => $payload]);
+
             return ApiResponse::error('Internal error', 500);
         }
 

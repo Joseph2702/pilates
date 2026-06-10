@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Permission extends Model
 {
     protected $table = 'permissions';
+
     protected $primaryKey = 'id_permission';
+
     public $timestamps = false;
 
     protected $fillable = ['nama_permission', 'deskripsi'];

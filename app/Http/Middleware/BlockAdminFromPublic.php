@@ -11,7 +11,7 @@ class BlockAdminFromPublic
     /**
      * Middleware to prevent admin users from accessing public routes.
      * Admin users should only access /admin area.
-     * 
+     *
      * If an authenticated user with admin role tries to access public routes,
      * they are redirected to the admin dashboard.
      */

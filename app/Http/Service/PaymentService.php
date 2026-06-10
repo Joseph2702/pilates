@@ -3,7 +3,6 @@
 namespace App\Http\Service;
 
 use App\Common\Exception\BusinessException;
-use App\Domain\Entity\PembelianPackage;
 use App\Domain\Entity\Transaksi;
 use App\Domain\Enums\PaymentStatus;
 use App\Http\Midtrans\MidtransClient;
@@ -47,33 +46,33 @@ class PaymentService
         $package = $this->packageService->getOrFail($idPackage);
 
         return DB::transaction(function () use ($idPelanggan, $package, $idPromo, $diskon, $hargaAkhir) {
-            $hargaAwal  = (float) $package->harga;
+            $hargaAwal = (float) $package->harga;
             $hargaAkhir ??= $hargaAwal;
 
             $pembelian = $this->pembelian->create([
-                'id_pelanggan'      => $idPelanggan,
-                'id_package'        => $package->id_package,
-                'id_promo'          => $idPromo,
-                'harga_awal'        => $hargaAwal,
-                'diskon'            => $diskon,
-                'harga_akhir'       => $hargaAkhir,
-                'status_pembelian'  => PaymentStatus::PENDING->value,
-                'kredit_earned'    => $package->jumlah_kredit,
-                'sisa_kredit'      => $package->jumlah_kredit,
+                'id_pelanggan' => $idPelanggan,
+                'id_package' => $package->id_package,
+                'id_promo' => $idPromo,
+                'harga_awal' => $hargaAwal,
+                'diskon' => $diskon,
+                'harga_akhir' => $hargaAkhir,
+                'status_pembelian' => PaymentStatus::PENDING->value,
+                'kredit_earned' => $package->jumlah_kredit,
+                'sisa_kredit' => $package->jumlah_kredit,
             ]);
 
             $orderId = 'PIL-'.$pembelian->id_pembelian_package.'-'.Str::upper(Str::random(6));
 
             $snapToken = $this->midtrans->createSnapToken([
                 'transaction_details' => [
-                    'order_id'     => $orderId,
+                    'order_id' => $orderId,
                     'gross_amount' => (int) $hargaAkhir,
                 ],
                 'item_details' => [[
-                    'id'       => (string) $package->id_package,
-                    'price'    => (int) $hargaAkhir,
+                    'id' => (string) $package->id_package,
+                    'price' => (int) $hargaAkhir,
                     'quantity' => 1,
-                    'name'     => $package->nama_package,
+                    'name' => $package->nama_package,
                 ]],
                 'callbacks' => [
                     'finish' => route('profile.packages'),
@@ -81,15 +80,15 @@ class PaymentService
             ]);
 
             $this->transaksi->create([
-                'order_id'              => $orderId,
-                'id_pembelian_package'  => $pembelian->id_pembelian_package,
-                'jumlah_bayar'          => $hargaAkhir,
-                'snap_token'            => $snapToken,
-                'status_internal'       => PaymentStatus::PENDING->value,
+                'order_id' => $orderId,
+                'id_pembelian_package' => $pembelian->id_pembelian_package,
+                'jumlah_bayar' => $hargaAkhir,
+                'snap_token' => $snapToken,
+                'status_internal' => PaymentStatus::PENDING->value,
             ]);
 
             return [
-                'order_id'   => $orderId,
+                'order_id' => $orderId,
                 'snap_token' => $snapToken,
             ];
         });
@@ -120,11 +119,11 @@ class PaymentService
         DB::transaction(function () use ($transaksi, $payload, $internal) {
             $this->transaksi->update($transaksi, [
                 'transaction_status' => $payload['transaction_status'] ?? null,
-                'fraud_status'       => $payload['fraud_status'] ?? null,
-                'payment_type'       => $payload['payment_type'] ?? null,
-                'payment_response'   => $payload,
-                'midtrans_order_id'  => $payload['transaction_id'] ?? null,
-                'status_internal'    => $internal->value,
+                'fraud_status' => $payload['fraud_status'] ?? null,
+                'payment_type' => $payload['payment_type'] ?? null,
+                'payment_response' => $payload,
+                'midtrans_order_id' => $payload['transaction_id'] ?? null,
+                'status_internal' => $internal->value,
             ]);
 
             $pembelian = $this->pembelian->findById((int) $transaksi->id_pembelian_package);
@@ -139,7 +138,7 @@ class PaymentService
             ) {
                 $masaBerlaku = $pembelian->package?->masa_berlaku ?? 30;
                 $this->pembelian->update($pembelian, [
-                    'status_pembelian'   => PaymentStatus::PAID->value,
+                    'status_pembelian' => PaymentStatus::PAID->value,
                     'tanggal_kadaluarsa' => now()->addDays($masaBerlaku),
                 ]);
 
@@ -162,16 +161,16 @@ class PaymentService
     protected function mapMidtransStatus(array $payload): PaymentStatus
     {
         $status = $payload['transaction_status'] ?? null;
-        $fraud  = $payload['fraud_status'] ?? null;
+        $fraud = $payload['fraud_status'] ?? null;
 
         return match ($status) {
-            'capture'  => $fraud === 'accept' ? PaymentStatus::PAID : PaymentStatus::PENDING,
+            'capture' => $fraud === 'accept' ? PaymentStatus::PAID : PaymentStatus::PENDING,
             'settlement' => PaymentStatus::PAID,
-            'pending'  => PaymentStatus::PENDING,
-            'deny'     => PaymentStatus::FAILED,
-            'expire'   => PaymentStatus::EXPIRED,
-            'cancel'   => PaymentStatus::CANCELED,
-            default    => PaymentStatus::PENDING,
+            'pending' => PaymentStatus::PENDING,
+            'deny' => PaymentStatus::FAILED,
+            'expire' => PaymentStatus::EXPIRED,
+            'cancel' => PaymentStatus::CANCELED,
+            default => PaymentStatus::PENDING,
         };
     }
 }

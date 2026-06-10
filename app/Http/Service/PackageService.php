@@ -35,14 +35,14 @@ class PackageService
     public function create(array $data): Package
     {
         $package = Package::create($data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'package',
             'create',
-            'Membuat package baru: ' . $data['nama_package']
+            'Membuat package baru: '.$data['nama_package']
         );
-        
+
         return $package;
     }
 
@@ -50,14 +50,14 @@ class PackageService
     {
         $package = $this->getOrFail($id);
         $package->update($data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'package',
             'update',
-            'Mengupdate package: ' . ($data['nama_package'] ?? $package->nama_package)
+            'Mengupdate package: '.($data['nama_package'] ?? $package->nama_package)
         );
-        
+
         return $package->fresh();
     }
 
@@ -66,12 +66,12 @@ class PackageService
         $package = $this->getOrFail($id);
         $packageName = $package->nama_package;
         $package->delete();
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'package',
             'delete',
-            'Menghapus package: ' . $packageName
+            'Menghapus package: '.$packageName
         );
     }
 }

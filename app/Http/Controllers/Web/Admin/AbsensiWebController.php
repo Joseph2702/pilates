@@ -17,6 +17,7 @@ class AbsensiWebController extends Controller
         protected ActivityLogService $activityLog,
         protected AbsensiService $absensiService,
     ) {}
+
     public function index()
     {
         $jadwalList = JadwalKelas::with(['kelas', 'instruktur.user'])
@@ -55,7 +56,7 @@ class AbsensiWebController extends Controller
             Auth::id(),
             'absensi',
             'create/update',
-            'Mencatat absensi untuk booking ID: ' . $data['id_booking']
+            'Mencatat absensi untuk booking ID: '.$data['id_booking']
         );
 
         return back()->with('success', 'Absensi berhasil disimpan');

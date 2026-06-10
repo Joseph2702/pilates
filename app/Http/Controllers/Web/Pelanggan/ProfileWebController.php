@@ -126,8 +126,7 @@ class ProfileWebController extends Controller
         $user = Auth::user();
 
         $transaksiList = Transaksi::with('pembelianPackage.package')
-            ->whereHas('pembelianPackage', fn ($q) =>
-                $q->where('id_pelanggan', $pelanggan?->id_pelanggan ?? 0)
+            ->whereHas('pembelianPackage', fn ($q) => $q->where('id_pelanggan', $pelanggan?->id_pelanggan ?? 0)
             )
             ->orderByDesc('created_at')
             ->paginate(15);
@@ -178,8 +177,8 @@ class ProfileWebController extends Controller
     {
         $user = Auth::user();
         $request->validate([
-            'nama'     => 'required|string|max:100',
-            'no_hp'    => 'nullable|string|max:20',
+            'nama' => 'required|string|max:100',
+            'no_hp' => 'nullable|string|max:20',
             'jenis_kelamin' => 'nullable|in:Laki-laki,Perempuan',
             'tempat_lahir' => 'nullable|string|max:100',
             'tanggal_lahir' => 'nullable|date',
@@ -194,12 +193,12 @@ class ProfileWebController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'password'         => 'required|min:8|confirmed',
+            'password' => 'required|min:8|confirmed',
         ]);
 
         $user = Auth::user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini salah.'])->withFragment('change-password');
         }
 

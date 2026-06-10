@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Absensi extends Model
 {
     protected $table = 'absensi';
+
     protected $primaryKey = 'id_absensi';
 
     protected $fillable = ['id_booking', 'status_kehadiran'];

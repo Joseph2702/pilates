@@ -25,6 +25,7 @@ class KelasRepository
     public function update(Kelas $kelas, array $data): Kelas
     {
         $kelas->update($data);
+
         return $kelas->fresh();
     }
 

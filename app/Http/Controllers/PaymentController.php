@@ -15,7 +15,7 @@ class PaymentController extends Controller
     {
         $data = $request->validate([
             'id_pelanggan' => ['required', 'integer', 'exists:pelanggan,id_pelanggan'],
-            'id_package'   => ['required', 'integer', 'exists:package,id_package'],
+            'id_package' => ['required', 'integer', 'exists:package,id_package'],
         ]);
 
         $result = $this->payments->checkout(

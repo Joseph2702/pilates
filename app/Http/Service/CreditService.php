@@ -32,12 +32,12 @@ class CreditService
         ?string $keterangan = null,
     ): MutasiKredit {
         return $this->mutasi->create([
-            'id_pelanggan'  => $idPelanggan,
-            'jenis_mutasi'  => 'credit',
+            'id_pelanggan' => $idPelanggan,
+            'jenis_mutasi' => 'credit',
             'jumlah_kredit' => $jumlah,
             'sumber_mutasi' => $sumber,
-            'id_referensi'  => $idReferensi,
-            'keterangan'    => $keterangan,
+            'id_referensi' => $idReferensi,
+            'keterangan' => $keterangan,
         ]);
     }
 
@@ -53,12 +53,12 @@ class CreditService
         }
 
         return $this->mutasi->create([
-            'id_pelanggan'  => $idPelanggan,
-            'jenis_mutasi'  => 'debit',
+            'id_pelanggan' => $idPelanggan,
+            'jenis_mutasi' => 'debit',
             'jumlah_kredit' => $jumlah,
             'sumber_mutasi' => $sumber,
-            'id_referensi'  => $idReferensi,
-            'keterangan'    => $keterangan,
+            'id_referensi' => $idReferensi,
+            'keterangan' => $keterangan,
         ]);
     }
 
@@ -78,12 +78,12 @@ class CreditService
         }
 
         $mutasi = $this->mutasi->create([
-            'id_pelanggan'  => $idPelanggan,
-            'jenis_mutasi'  => 'debit',
+            'id_pelanggan' => $idPelanggan,
+            'jenis_mutasi' => 'debit',
             'jumlah_kredit' => $jumlah,
             'sumber_mutasi' => $sumber,
-            'id_referensi'  => $idReferensi,
-            'keterangan'    => $keterangan,
+            'id_referensi' => $idReferensi,
+            'keterangan' => $keterangan,
         ]);
 
         $this->syncSisaKreditFIFO($idPelanggan);
@@ -103,12 +103,12 @@ class CreditService
         ?string $keterangan = null,
     ): MutasiKredit {
         $mutasi = $this->mutasi->create([
-            'id_pelanggan'  => $idPelanggan,
-            'jenis_mutasi'  => 'credit',
+            'id_pelanggan' => $idPelanggan,
+            'jenis_mutasi' => 'credit',
             'jumlah_kredit' => $jumlah,
             'sumber_mutasi' => $sumber,
-            'id_referensi'  => $idReferensi,
-            'keterangan'    => $keterangan,
+            'id_referensi' => $idReferensi,
+            'keterangan' => $keterangan,
         ]);
 
         $this->syncSisaKreditFIFO($idPelanggan);
@@ -130,13 +130,13 @@ class CreditService
     {
         $packages = $this->pembelian->findAllPaidForPelanggan($idPelanggan);
 
-        $saldo       = $this->getSaldo($idPelanggan);
+        $saldo = $this->getSaldo($idPelanggan);
         $totalEarned = (int) $packages->sum('kredit_earned');
         $netConsumed = max(0, $totalEarned - $saldo);
 
         $remaining = $netConsumed;
         foreach ($packages as $package) {
-            $used          = min((int) $package->kredit_earned, $remaining);
+            $used = min((int) $package->kredit_earned, $remaining);
             $newSisaKredit = (int) $package->kredit_earned - $used;
             $package->update(['sisa_kredit' => $newSisaKredit]);
             $remaining -= $used;

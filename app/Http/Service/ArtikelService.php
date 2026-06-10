@@ -34,14 +34,14 @@ class ArtikelService
     public function create(array $data): Artikel
     {
         $artikel = $this->repository->create($data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'artikel',
             'create',
-            'Membuat artikel baru: ' . $data['judul_artikel']
+            'Membuat artikel baru: '.$data['judul_artikel']
         );
-        
+
         return $artikel;
     }
 
@@ -49,14 +49,14 @@ class ArtikelService
     {
         $artikel = $this->getOrFail($id);
         $result = $this->repository->update($artikel, $data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'artikel',
             'update',
-            'Mengupdate artikel: ' . ($data['judul_artikel'] ?? $artikel->judul_artikel)
+            'Mengupdate artikel: '.($data['judul_artikel'] ?? $artikel->judul_artikel)
         );
-        
+
         return $result;
     }
 
@@ -65,12 +65,12 @@ class ArtikelService
         $artikel = $this->getOrFail($id);
         $judul = $artikel->judul_artikel;
         $this->repository->delete($artikel);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'artikel',
             'delete',
-            'Menghapus artikel: ' . $judul
+            'Menghapus artikel: '.$judul
         );
     }
 }

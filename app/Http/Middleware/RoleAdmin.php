@@ -12,11 +12,11 @@ class RoleAdmin
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('admin.login');
         }
 
-        if (!$user->isAdminAreaUser()) {
+        if (! $user->isAdminAreaUser()) {
             return redirect()->route('home')
                 ->with('error', 'Anda tidak memiliki akses ke admin panel.');
         }

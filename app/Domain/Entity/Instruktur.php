@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Instruktur extends Model
 {
     protected $table = 'instruktur';
+
     protected $primaryKey = 'id_instruktur';
+
     public $timestamps = false;
 
     protected $fillable = ['id_user', 'spesialisasi'];

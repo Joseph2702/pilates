@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Kelas extends Model
 {
     protected $table = 'kelas';
+
     protected $primaryKey = 'id_kelas';
 
     protected $fillable = ['nama_kelas', 'deskripsi', 'kapasitas'];

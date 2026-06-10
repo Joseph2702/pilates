@@ -36,14 +36,14 @@ class PelangganService
     {
         $pelanggan = $this->getOrFail($id);
         $result = $this->repository->update($pelanggan, $data);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'pelanggan',
             'update',
             'Mengupdate data pelanggan'
         );
-        
+
         return $result;
     }
 
@@ -51,7 +51,7 @@ class PelangganService
     {
         $pelanggan = $this->getOrFail($id);
         $this->repository->delete($pelanggan);
-        
+
         $this->activityLog->log(
             Auth::id() ?? 0,
             'pelanggan',

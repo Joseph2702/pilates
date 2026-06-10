@@ -30,6 +30,7 @@ class RoleRepository
     public function update(Role $role, array $data): Role
     {
         $role->update($data);
+
         return $role->fresh();
     }
 

@@ -12,13 +12,14 @@ use Illuminate\Support\Facades\Auth;
 class PermissionWebController extends Controller
 {
     use PassPermissionsToView;
-    
+
     public function __construct(protected ActivityLogService $activityLog) {}
 
     public function index()
     {
         $data = Permission::orderBy('nama_permission')->get();
         $permissions = $this->buildPermissions('permission');
+
         return view('admin.permissions.index', compact('data', 'permissions'));
     }
 
@@ -35,12 +36,12 @@ class PermissionWebController extends Controller
         ]);
 
         Permission::create($data);
-        
+
         $this->activityLog->log(
             Auth::id(),
             'permission',
             'create',
-            'Membuat permission baru: ' . $data['nama_permission']
+            'Membuat permission baru: '.$data['nama_permission']
         );
 
         return redirect()->route('admin.permissions.index')->with('success', 'Permission berhasil dibuat.');
@@ -49,6 +50,7 @@ class PermissionWebController extends Controller
     public function edit(int $id)
     {
         $permission = Permission::findOrFail($id);
+
         return view('admin.permissions.edit', compact('permission'));
     }
 
@@ -62,12 +64,12 @@ class PermissionWebController extends Controller
         ]);
 
         $permission->update($data);
-        
+
         $this->activityLog->log(
             Auth::id(),
             'permission',
             'update',
-            'Mengupdate permission: ' . $data['nama_permission']
+            'Mengupdate permission: '.$data['nama_permission']
         );
 
         return redirect()->route('admin.permissions.index')->with('success', 'Permission berhasil diupdate.');
@@ -78,14 +80,14 @@ class PermissionWebController extends Controller
         $permission = Permission::findOrFail($id);
         $permName = $permission->nama_permission;
         $permission->delete();
-        
+
         $this->activityLog->log(
             Auth::id(),
             'permission',
             'delete',
-            'Menghapus permission: ' . $permName
+            'Menghapus permission: '.$permName
         );
-        
+
         return redirect()->route('admin.permissions.index')->with('success', 'Permission berhasil dihapus.');
     }
 }

@@ -9,7 +9,7 @@ use App\Http\Traits\PassPermissionsToView;
 class ActivityLogWebController extends Controller
 {
     use PassPermissionsToView;
-    
+
     public function index()
     {
         $logs = ActivityLog::with('user')
@@ -22,6 +22,7 @@ class ActivityLogWebController extends Controller
             ->paginate(20);
 
         $permissions = $this->buildPermissions('activity_logs');
+
         return view('admin.activity-logs.index', compact('logs', 'permissions'));
     }
 }

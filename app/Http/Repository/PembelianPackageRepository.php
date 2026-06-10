@@ -28,6 +28,7 @@ class PembelianPackageRepository
 
     /**
      * Active paid packages with remaining credits, ordered oldest first (FIFO for booking debit).
+     *
      * @return Collection<int, PembelianPackage>
      */
     public function findActiveForPelanggan(int $idPelanggan): Collection
@@ -55,6 +56,7 @@ class PembelianPackageRepository
 
     /**
      * All paid packages ordered by purchase date (for FIFO sisa_kredit sync).
+     *
      * @return Collection<int, PembelianPackage>
      */
     public function findAllPaidForPelanggan(int $idPelanggan): Collection

@@ -4,21 +4,22 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Domain\Entity\Package;
 use App\Http\Controllers\Controller;
-use App\Http\Traits\PassPermissionsToView;
 use App\Http\Service\ActivityLogService;
+use App\Http\Traits\PassPermissionsToView;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PackageWebController extends Controller
 {
     use PassPermissionsToView;
-    
+
     public function __construct(protected ActivityLogService $activityLog) {}
-    
+
     public function index()
     {
         $packages = Package::orderBy('id_package', 'desc')->paginate(15);
         $permissions = $this->buildPermissions('packages');
+
         return view('admin.packages.index', compact('packages', 'permissions'));
     }
 
@@ -38,12 +39,12 @@ class PackageWebController extends Controller
         ]);
 
         Package::create($data);
-        
+
         $this->activityLog->log(
             Auth::id(),
             'package',
             'create',
-            'Membuat package baru: ' . $data['nama_package']
+            'Membuat package baru: '.$data['nama_package']
         );
 
         return redirect()->route('admin.packages.index')->with('success', 'Package berhasil dibuat.');
@@ -52,6 +53,7 @@ class PackageWebController extends Controller
     public function edit(int $id)
     {
         $package = Package::findOrFail($id);
+
         return view('admin.packages.edit', compact('package'));
     }
 
@@ -68,12 +70,12 @@ class PackageWebController extends Controller
         ]);
 
         $package->update($data);
-        
+
         $this->activityLog->log(
             Auth::id(),
             'package',
             'update',
-            'Mengupdate package: ' . $data['nama_package']
+            'Mengupdate package: '.$data['nama_package']
         );
 
         return redirect()->route('admin.packages.index')->with('success', 'Package berhasil diupdate.');
@@ -84,14 +86,14 @@ class PackageWebController extends Controller
         $package = Package::findOrFail($id);
         $packageName = $package->nama_package;
         $package->delete();
-        
+
         $this->activityLog->log(
             Auth::id(),
             'package',
             'delete',
-            'Menghapus package: ' . $packageName
+            'Menghapus package: '.$packageName
         );
-        
+
         return redirect()->route('admin.packages.index')->with('success', 'Package berhasil dihapus.');
     }
 }

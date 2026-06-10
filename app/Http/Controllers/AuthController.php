@@ -18,10 +18,10 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'nama'     => ['required', 'string', 'max:100'],
-            'email'    => ['required', 'email', 'max:100'],
+            'nama' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', 'max:100'],
             'password' => ['required', 'string', 'min:8'],
-            'no_hp'    => ['nullable', 'string', 'max:20'],
+            'no_hp' => ['nullable', 'string', 'max:20'],
         ]);
 
         $result = $this->auth->register($data);
@@ -36,10 +36,10 @@ class AuthController extends Controller
         return ApiResponse::created([
             'user' => [
                 'id_user' => $result['user']->id_user,
-                'nama'    => $result['user']->nama,
-                'email'   => $result['user']->email,
+                'nama' => $result['user']->nama,
+                'email' => $result['user']->email,
             ],
-            'token'      => $result['token'],
+            'token' => $result['token'],
             'token_type' => 'Bearer',
         ], 'Registrasi berhasil');
     }
@@ -47,7 +47,7 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'email'    => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 
@@ -63,10 +63,10 @@ class AuthController extends Controller
         return ApiResponse::success([
             'user' => [
                 'id_user' => $result['user']->id_user,
-                'nama'    => $result['user']->nama,
-                'email'   => $result['user']->email,
+                'nama' => $result['user']->nama,
+                'email' => $result['user']->email,
             ],
-            'token'      => $result['token'],
+            'token' => $result['token'],
             'token_type' => 'Bearer',
         ], 'Login berhasil');
     }
@@ -93,9 +93,9 @@ class AuthController extends Controller
 
         return ApiResponse::success([
             'id_user' => $user->id_user,
-            'nama'    => $user->nama,
-            'email'   => $user->email,
-            'no_hp'   => $user->no_hp,
+            'nama' => $user->nama,
+            'email' => $user->email,
+            'no_hp' => $user->no_hp,
         ]);
     }
 }

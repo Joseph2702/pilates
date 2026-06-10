@@ -2,7 +2,6 @@
 
 namespace App\Http\Repository;
 
-
 use App\Domain\Entity\JadwalKelas;
 use Illuminate\Database\Eloquent\Collection;
 
